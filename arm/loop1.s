@@ -8,8 +8,7 @@ _start:
 _loop:	
 	BL   _update_counter_string
 	BL   _hello
-	SUB  R8,R8,#1 @ Decrement the loop counter
-	CMP  R8,#0 @ Check for loop condition
+	SUBS R8,R8,#1 @ Decrement the loop counter
 	BEQ  _exit @ Exit when counter=0
 	BNE  _loop @ Loop again if counter != 0
 	
