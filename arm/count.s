@@ -1,4 +1,4 @@
-@ Syscall 4 to write a string 
+@ Count Characters
 @ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
 @ vim: ft=arm 
 
