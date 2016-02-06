@@ -6,7 +6,7 @@ AS=arm-$(ARCH)-as
 LD=arm-$(ARCH)-ld
 ASFLAGS=-g
 LDFLAGS=
-SOURCES=prog3a.s prog7a.s loop1.s prog8b.s
+SOURCES=prog3a.s prog7a.s loop1.s prog8b.s count.s
 OBJECTS=$(SOURCES:.s=.o)
 EXECUTABLES=$(SOURCES:.s=)
 
