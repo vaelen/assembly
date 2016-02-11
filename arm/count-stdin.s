@@ -5,10 +5,7 @@
 .global _start
 
 _start:
-    LDR     R0,=status          @ Print status
-    BL      print_string        @ |
-    LDR     R0,=newline         @ Print a newline character
-    BL      print_string        @ |
+    BL      status              @ Print status
     BL      init_counts         @ Initialize memory
     MOV     R0, #0              @ Set file handle to STDIN
     BL      count_from_file     @ Count characters from file handle
@@ -27,7 +24,7 @@ count_from_file:
     MOV     R3,#4096            @ Set buffer size for syscall
     MOV     R7,#3               @ Syscall number: 3 is read()
     SWI     0                   @ Read from file handle
-    BL      print_registers
+    BLEQ    check_read_error    @ Warn about a bad address
     CMP     R0,#0               @ Check for EOF
     BGT     cff_helper          @ Count characters and loop if not EOF
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
@@ -37,6 +34,46 @@ count_from_file:
     LDR     R0,=buffer          @ Read from the buffer
     BL      count_characters    @ Count characters
     B       cff_loop            @ Loop 
+
+status:
+    @ Print status
+    PUSH    {R0,LR}
+    LDR     R0,=status_s
+    BL      print_string
+    BL      newline
+    POP     {R0,PC}
+
+
+newline:
+    @ Print a newline character
+    PUSH    {R0,LR}
+    LDR     R0,=newline_s
+    BL      print_string 
+    POP     {R0,PC}
+
+check_read_error:
+    PUSH    {R0,R1,LR}
+    MOV     R1,R0
+    MOV     R0,#0
+    CMP     R1,#-4              @ Check for interrupted system call
+    LDREQ   R0,=eintr
+    CMP     R1,#-5              @ Check for IO error
+    LDREQ   R0,=eio   
+    CMP     R1,#-9              @ Check for bad file descriptor
+    LDREQ   R0,=ebadf
+    CMP     R1,#-11             @ Check for try again
+    LDREQ   R0,=efault
+    CMP     R1,#-14             @ Check for bad address
+    LDREQ   R0,=eagain
+    CMP     R1,#-21             @ Check for a directory
+    LDREQ   R0,=eisdir
+    CMP     R1,#-22             @ Check for invalid
+    LDREQ   R0,=einval
+    CMP     R0,#0               @ If we have a message to print, then print it
+    BLNE    print_string 
+    CMP     R0,#0
+    BLNE    newline
+    POP     {R0,R1,PC}
 
 print_registers:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
@@ -69,12 +106,11 @@ print_registers:
 
 print_r0:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
-    LDR     R1,=count_string     @ | Write to the char_string memory location
+    LDR     R1,=count_string    @ | Write to the char_string memory location
     BL      integer_to_string   @ | Get string representation
     MOV     R0,R1               @ Print the character string
     BL      print_string        @ |
-    LDR     R0,=newline         @ Print a newline character
-    BL      print_string        @ |
+    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
 count_characters:
@@ -134,8 +170,7 @@ print_count_header:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     LDR     R0,=header          @ Print header
     BL      print_string        @ |
-    LDR     R0,=newline         @ Print a newline character
-    BL      print_string        @ |
+    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
 print_count_line:
@@ -157,8 +192,7 @@ print_count_line:
     BL      integer_to_string   @ | Get string representation
     MOV     R0,R1               @ Print the count string
     BL      print_string        @ |
-    LDR     R0,=newline         @ Print a newline character
-    BL      print_string        @ |
+    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
 integer_to_string:
@@ -246,8 +280,18 @@ char: .word 0
 buffer: .space 4096
 count_string: .asciz "0000000000" @ max 4294967296
 char_string: .asciz "000" @ max 256
-newline: .asciz "\n"
-status: .asciz "Counting Characters"
+newline_s: .asciz "\n"
+status_s: .asciz "Counting Characters"
 header: .asciz "Character Counts:"
 line_part1: .asciz "\tCharacter: "
 line_part2: .asciz "\tCount: "
+
+@ Error Codes
+eintr:  .asciz "[ERROR] Interrupted System Call: The call was interrupted by a signal before any data was read."
+eio:    .asciz "[ERROR] I/O Error"
+ebadf:  .asciz "[ERROR] Bad File Number: Not a valid file descriptor"
+eagain: .asciz "[ERROR] Try Again: Read would block but file is marked non-blocking"
+efault: .asciz "[ERROR] Bad Address: Buffer is outside your addressible address space"
+eisdir: .asciz "[ERROR] Trying to Read From a Directory Instead of a File"
+einval: .asciz "[ERROR] Invalid Argument: Could not read file"
+
