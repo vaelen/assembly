@@ -27,6 +27,7 @@ count_from_file:
     LDR     R1,=buffer          @ Set buffer location
     MOV     R2,#4096            @ Set buffer size
     BL      read                @ Read bytes
+    MOV     R5, R0              @ R5 = Bytes read
     CMP     R0,#0               @ Check for Errors
     BLLT    check_read_error    @ Warn about a bad address
     CMP     R0,#0               @ Check for EOF

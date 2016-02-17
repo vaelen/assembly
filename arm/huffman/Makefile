@@ -8,9 +8,9 @@ ASFLAGS=-g
 LDFLAGS=
 OBJECTS=numbers.o strings.o files.o errors.o count.o program.o
 
-all: hoffman
+all: huffman
 
-hoffman: $(OBJECTS)
+huffman: $(OBJECTS)
 	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
 
 .o:
@@ -18,4 +18,4 @@ hoffman: $(OBJECTS)
 
 clean:
 	rm -f *.o
-	rm -f hoffman
+	rm -f huffman
