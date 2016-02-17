@@ -3,11 +3,11 @@
 @ vim: ft=arm 
 
 @ External Functions
-.global newline
-.global check_read_error
 .global fputs
 .global puts
 .global itoa
+.global read
+.global check_read_error
 
 @ Exported Functions
 .global count_from_file
@@ -23,12 +23,12 @@ count_from_file:
     MOV     R4,R0               @ R4 = File handle
   cff_loop:
     MOV     R0,#0
-    MOV     R1,R4               @ Set file handle for syscall
-    LDR     R2,=buffer          @ Write to buffer for syscall
-    MOV     R3,#4096            @ Set buffer size for syscall
-    MOV     R7,#3               @ Syscall number: 3 is read()
-    SWI     0                   @ Read from file handle
-    BLEQ    check_read_error    @ Warn about a bad address
+    MOV     R0,R4               @ Set file handle
+    LDR     R1,=buffer          @ Set buffer location
+    MOV     R2,#4096            @ Set buffer size
+    BL      read                @ Read bytes
+    CMP     R0,#0               @ Check for Errors
+    BLLT    check_read_error    @ Warn about a bad address
     CMP     R0,#0               @ Check for EOF
     BGT     cff_helper          @ Count characters and loop if not EOF
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
