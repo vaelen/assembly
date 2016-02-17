@@ -11,3 +11,4 @@ read:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     MOV     R7,#3               @ Syscall number: 3 is read()
     SWI     0                   @ Read from file handle
+    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return

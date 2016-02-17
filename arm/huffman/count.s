@@ -15,6 +15,8 @@
 .global count_characters
 .global print_counts
 .global status
+.global sort_chars
+.global print_sorted
 
 count_from_file:
     @ Count characters from the given file handle
@@ -65,23 +67,73 @@ count_characters:
     BNE     count_loop          @ Loop if counter != 0
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
+sort_chars:
+    @ Copies the characters into an array sorted by occurance
+    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    LDR     R0,=sorted_chars    @ R0 = Memory location of sorted array
+    MOV     R1,#256             @ R1 = Length of sorted array
+    LDR     R2,=counts          @ R2 = Memory location of counts array
+    MOV     R3,#256             @ R3 = Length of counts array
+  sort_chars_next:
+    MOV     R4,#0               @ R4 = Current sorted array index
+    MOV     R5,#0               @ R5 = Current character value
+    MOV     R6,R2               @ R6 = Current memory location
+    ADDS    R7,R2,R3,LSL #2     @ R7 = Ending memory location (R2 + (R3 * 4)
+    MOV     R8,#0               @ R8 = Value at current memory location
+    MOV     R9,#0               @ R9 = Character with max count
+    MOV     R10,#0              @ R10 = Memory location of max count
+    MOV     R11,#0              @ R11 = Value at max count memory location
+  sort_chars_loop:
+    LDR     R8,[R6],#4          @ Load count and increment memory location
+    ADDS    R5,R5,#1            @ Increment character number
+    CMP     R8,R11              @ Compare current value to max value
+    MOVGT   R9,R5               @ If current > max, update max character
+    MOVGT   R10,R6              @ If current > max, update max memory location
+    MOVGT   R11,R8              @ If current > max, update max value
+    CMP     R6,R7               @ Have we reached the end?
+    BNE     sort_chars_loop     @ If not, loop again
+    STRB    R9,[R0,R4]          @ Store max char at current sorted array index
+    MOV     R11,#0              @ Set max count to 0
+    STR     R11,[R10]           @ Write 0 into the max count memory location
+    ADDS    R4,R4,#1            @ Increment sorted array index
+    CMP     R4,R3               @ Have we reached the end of the sorted array?
+    BLT     sort_chars_next     @ If not, do the whole thing again
+    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
+
 init_counts:
     @ Initialize the memory used for counting
     PUSH    {R0-R12,LR}         @ Push registers on to stack
-    MOV     R0,#0               @ value to store
-    MOV     R1,#0               @ value to store
-    MOV     R2,#0               @ value to store
-    MOV     R3,#0               @ value to store
-    MOV     R4,#0               @ value to store
+    LDR     R0,=counts          @ Starting memory location
+    MOV     R1,#1024            @ Array size
+    BL      init_array          @ Initialize array
+    POP     {R0-R12,PC}         @ Return when loop completes, restore registers
+
+init_sorted_chars:
+    @ Initialize the memory used for counting
+    PUSH    {R0-R12,LR}         @ Push registers on to stack
+    LDR     R0,=sorted_chars    @ Starting memory location
+    MOV     R1,#256             @ Array size
+    BL      init_array          @ Initialize array
+    POP     {R0-R12,PC}         @ Return when loop completes, restore registers
+
+init_array:
+    @ Initialize an array - Array size must be divisible by 32
+    @ Arguments: R0 = Memory location of array, R1 = Array length in bytes
+    PUSH    {R0-R12,LR}         @ Push registers on to stack
+    ADDS    R3,R0,R1            @ R3 = Ending memory location
+    MOV     R4,R0               @ R4 = Current memory location
     MOV     R5,#0               @ value to store
     MOV     R6,#0               @ value to store
     MOV     R7,#0               @ value to store
-    LDR     R11,=counts         @ Starting memory location
-    LDR     R12,=counts_end     @ Ending memory location
-  init_counts_loop:
-    STMIA   R11!,{R0-R7}        @ Store 0 in the next 8 words of memory
-    CMP     R11,R12
-    BNE     init_counts_loop    @ Loop again if current != end
+    MOV     R8,#0               @ value to store
+    MOV     R9,#0               @ value to store
+    MOV     R10,#0              @ value to store
+    MOV     R11,#0              @ value to store
+    MOV     R12,#0              @ value to store
+  init_array_loop:
+    STMIA   R4!,{R5-R12}        @ Store 0 in the next 8 words of memory
+    CMP     R4,R3               @ Have we reached the end of the array?
+    BNE     init_array_loop     @ Loop again if current != end
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
 print_counts:
@@ -127,10 +179,43 @@ print_count_line:
     BL      puts                @ |
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
+print_sorted:
+    @ Prints a list of counts
+    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    BL      print_sorted_header @ Print header
+    LDR     R4,=sorted_chars    @ Starting memory location
+    ADDS    R5,R4,#256          @ Ending memory location
+  print_sorted_loop:
+    LDRB    R0,[R4],#1          @ Load count and increment memory location
+    BLNE    print_sorted_line   @ Print the count line if we had a match
+    CMP     R4,R5               @ Have we reached the end?
+    BNE     print_sorted_loop   @ If not, loop again
+    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
+
+print_sorted_header:
+    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    LDR     R0,=sorted_header   @ Print header
+    BL      puts                @ |
+    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
+
+print_sorted_line:
+    @ Arguments: Character in R0
+    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    MOV     R4,R0               @ R4 = Character
+    LDR     R0,=line_part1      @ Print the first part of the line
+    BL      fputs               @ |
+    MOV     R0,R4               @ Convert character to a string
+    LDR     R1,=char_string     @ | Write to the char_string memory location
+    BL      itoa                @ | Get string representation
+    MOV     R0,R1               @ Print the character string
+    BL      puts                @ |
+    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
+
 .data
 
 counts: .space 1024
 counts_end: .word 0
+sorted_chars: .space 256
 char: .word 0
 buffer: .space 4096
 count_string: .asciz "0000000000" @ max 4294967296
@@ -139,4 +224,5 @@ status_s: .asciz "Counting Characters"
 header: .asciz "Character Counts:"
 line_part1: .asciz "\tCharacter: "
 line_part2: .asciz "\tCount: "
+sorted_header: .asciz "Sorted Characters:"
 

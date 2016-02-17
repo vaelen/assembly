@@ -7,6 +7,10 @@
 .global init_counts
 .global count_from_file
 .global print_counts
+.global sorted
+.global print_sorted
+.global sort_chars
+.global print_sorted
 .global exit
 
 @ Exported Methods
@@ -18,5 +22,8 @@ _start:
     MOV     R0, #0              @ Set file handle to STDIN
     BL      count_from_file     @ Count characters from file handle
     BL      print_counts        @ Print counts
+@    BL      init_sorted         @ Initialize memory
+@    BL      sort_chars          @ Sort characters
+@    BL      print_sorted        @ Print sorted characters
     MOV     R0, #0              @ Normal return code
     B       exit                @ exit
