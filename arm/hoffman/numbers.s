@@ -3,22 +3,22 @@
 @ vim: ft=arm 
 
 @ Exported Methods
-.global itos
+.global itoa
 .global divide
 
-itos:
+itoa:
     @ Converts an integer to a string
     @ Arguments: integer in R0, memory address in R1
     @ This works by using recursion
     @ It builds the value backwards on the stack then pops it off in the right order
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     MOV     R4,R1               @ Store the memory address in R4
-    BL      itos_helper         @ Recurse
+    BL      itoa_helper         @ Recurse
     MOV     R6,#0               @ R6 = null terminator
     STREQB  R6,[R4]             @ Add a null terminator
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
-itos_helper:
+itoa_helper:
     @ Arguments: integer in R0, memory address in R4
     @ R
     PUSH    {R5,LR}             @ Push the registers on to the stack
@@ -27,7 +27,7 @@ itos_helper:
     MOV     R5,R0               @ Put the remainder in R5
     MOV     R0,R2               @ Move the quotient into R0 for the next iteration
     CMP     R0,#0               @ Is this the end of the string?
-    BLNE    itos_helper         @ If not, recurse 
+    BLNE    itoa_helper         @ If not, recurse 
     ADD     R6,R5,#48           @ Add 48 to the remainder to get an ASCII character
     STRB    R6,[R4],#1          @ Store the byte into memory and increment the memory location
     POP     {R5,PC}             @ Pop the registers off of the stack and return

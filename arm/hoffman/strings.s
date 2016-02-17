@@ -3,7 +3,7 @@
 @ vim: ft=arm 
 
 @ External Methods
-.global itos
+.global itoa
 .global divide
 
 @ Exported Methods
@@ -11,13 +11,14 @@
 .global print_registers
 .global print_r0
 .global strlen
+.global fputs
 .global puts
 
 newline:
     @ Print a newline character
     PUSH    {R0,LR}
     LDR     R0,=newline_s
-    BL      puts 
+    BL      fputs 
     POP     {R0,PC}
 
 print_registers:
@@ -52,13 +53,19 @@ print_registers:
 print_r0:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     LDR     R1,=int_string      @ | Write to the int_string memory location
-    BL      itos                @ | Get string representation
+    BL      itoa                @ | Get string representation
     MOV     R0,R1               @ Print the character string
     BL      puts                @ |
-    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
 puts:
+    @ Print the null terminated string at R0, followed by a newline
+    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    BL      fputs               @ Print the null terminated string at R0
+    BL      newline             @ Print a newline character
+    POP     {R0-R12,PC}         @ Return when loop completes, restore registers
+
+fputs:
     @ Print the null terminated string at R0
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     BL      strlen              @ Get the length of the string

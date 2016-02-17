@@ -29,8 +29,6 @@ check_read_error:
     LDREQ   R0,=einval
     CMP     R0,#0               @ If we have a message to print, then print it
     BLNE    puts         
-    CMP     R0,#0
-    BLNE    newline
     POP     {R0,R1,PC}
 
 .data

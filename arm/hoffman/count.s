@@ -5,8 +5,9 @@
 @ External Functions
 .global newline
 .global check_read_error
+.global fputs
 .global puts
-.global itos
+.global itoa
 
 @ Exported Functions
 .global count_from_file
@@ -40,11 +41,10 @@ count_from_file:
 
 status:
     @ print status
-    push    {r0,lr}
-    ldr     r0,=status_s
-    bl      puts
-    bl      newline
-    pop     {R0,PC}
+    PUSH    {R0,LR}
+    LDR     R0,=status_s
+    BL      puts
+    POP     {R0,PC}
 
 count_characters:
     @ Counts characters 
@@ -103,7 +103,6 @@ print_count_header:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     LDR     R0,=header          @ Print header
     BL      puts                @ |
-    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
 print_count_line:
@@ -112,20 +111,19 @@ print_count_line:
     MOV     R4,R0               @ R4 = Character
     MOV     R5,R1               @ R5 = Count
     LDR     R0,=line_part1      @ Print the first part of the line
-    BL      puts                @ |
+    BL      fputs               @ |
     MOV     R0,R4               @ Convert character to a string
     LDR     R1,=char_string     @ | Write to the char_string memory location
-    BL      itos                @ | Get string representation
+    BL      itoa                @ | Get string representation
     MOV     R0,R1               @ Print the character string
-    BL      puts                @ |
+    BL      fputs               @ |
     LDR     R0,=line_part2      @ Print the second part of the line
-    BL      puts                @ |
+    BL      fputs               @ |
     MOV     R0,R5               @ Convert count to a string
     LDR     R1,=count_string    @ | Write to the count_string memory location
-    BL      itos                @ | Get string representation
+    BL      itoa                @ | Get string representation
     MOV     R0,R1               @ Print the count string
     BL      puts                @ |
-    BL      newline             @ Print a newline character
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
 .data
