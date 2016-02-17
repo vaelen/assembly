@@ -4,7 +4,6 @@
 
 @ External Methods
 .global itoa
-.global divide
 
 @ Exported Methods
 .global newline
