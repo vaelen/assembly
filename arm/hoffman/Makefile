@@ -6,7 +6,7 @@ AS=arm-$(ARCH)-as
 LD=arm-$(ARCH)-ld
 ASFLAGS=-g
 LDFLAGS=
-OBJECTS=strings.o errors.o count.o count-stdin.o
+OBJECTS=strings.o errors.o count.o program.o
 
 all: hoffman
 
