@@ -7,7 +7,8 @@
 .global init_counts
 .global count_from_file
 .global print_counts
-@ Exported Method
+
+@ Exported Methods
 .global _start
 
 _start:

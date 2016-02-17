@@ -3,7 +3,7 @@
 @ vim: ft=arm 
 
 @ External procedures
-.global print_string
+.global puts
 .global newline
 
 @ Exported procedures
@@ -28,7 +28,7 @@ check_read_error:
     CMP     R1,#-22             @ Check for invalid
     LDREQ   R0,=einval
     CMP     R0,#0               @ If we have a message to print, then print it
-    BLNE    print_string 
+    BLNE    puts         
     CMP     R0,#0
     BLNE    newline
     POP     {R0,R1,PC}
