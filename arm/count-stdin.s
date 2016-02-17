@@ -18,10 +18,9 @@ count_from_file:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     MOV     R4,R0               @ R4 = File handle
   cff_loop:
-    MOV     R0,#0
-    MOV     R1,R4               @ Set file handle for syscall
-    LDR     R2,=buffer          @ Write to buffer for syscall
-    MOV     R3,#4096            @ Set buffer size for syscall
+    MOV     R0,R4               @ Set file handle for syscall
+    LDR     R1,=buffer          @ Write to buffer for syscall
+    MOV     R2,#4096            @ Set buffer size for syscall
     MOV     R7,#3               @ Syscall number: 3 is read()
     SWI     0                   @ Read from file handle
     BLEQ    check_read_error    @ Warn about a bad address
