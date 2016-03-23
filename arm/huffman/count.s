@@ -15,6 +15,7 @@
 .global count_characters
 .global print_counts
 .global status
+.global init_sorted_chars
 .global sort_chars
 .global print_sorted
 
@@ -57,7 +58,7 @@ count_characters:
     LDR     R5,=counts          @ R5 = Address of the count array
     SUBS    R2,R0,#1            @ R2 = One byte before the first memory location
   count_loop:
-    ADDS    R2,R2,#1            @ R2 = Current memory location
+    ADDS    R2,#1               @ R2 = Current memory location
     LDRB    R3,[R2]             @ R3 = Current byte
     LDR     R4,[R5,R3,LSL #2]   @ R4 = Current count (R5 + (R3*4))
     ADDS    R4,#1               @ Increment the count
@@ -73,8 +74,8 @@ sort_chars:
     MOV     R1,#256             @ R1 = Length of sorted array
     LDR     R2,=counts          @ R2 = Memory location of counts array
     MOV     R3,#256             @ R3 = Length of counts array
-  sort_chars_next:
     MOV     R4,#0               @ R4 = Current sorted array index
+  sort_chars_next:
     MOV     R5,#0               @ R5 = Current character value
     MOV     R6,R2               @ R6 = Current memory location
     ADDS    R7,R2,R3,LSL #2     @ R7 = Ending memory location (R2 + (R3 * 4)
@@ -83,20 +84,25 @@ sort_chars:
     MOV     R10,#0              @ R10 = Memory location of max count
     MOV     R11,#0              @ R11 = Value at max count memory location
   sort_chars_loop:
-    LDR     R8,[R6],#4          @ Load count and increment memory location
-    ADDS    R5,R5,#1            @ Increment character number
+    LDR     R8,[R6]             @ Load value
     CMP     R8,R11              @ Compare current value to max value
     MOVGT   R9,R5               @ If current > max, update max character
     MOVGT   R10,R6              @ If current > max, update max memory location
     MOVGT   R11,R8              @ If current > max, update max value
+    ADDS    R5,#1               @ Increment character number
+    ADDS    R6,#4               @ Increment the memory location
     CMP     R6,R7               @ Have we reached the end?
     BNE     sort_chars_loop     @ If not, loop again
+  sort_chars_loop_done:
     STRB    R9,[R0,R4]          @ Store max char at current sorted array index
     MOV     R11,#0              @ Set max count to 0
+    CMP     R10,#0              @ Did we find a max count?
+    BLEQ    sort_chars_l_exit   @ If not, we're done
     STR     R11,[R10]           @ Write 0 into the max count memory location
-    ADDS    R4,R4,#1            @ Increment sorted array index
+    ADDS    R4,#1               @ Increment sorted array index
     CMP     R4,R3               @ Have we reached the end of the sorted array?
     BLT     sort_chars_next     @ If not, do the whole thing again
+  sort_chars_l_exit:
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
 init_counts:
@@ -104,31 +110,33 @@ init_counts:
     PUSH    {R0-R12,LR}         @ Push registers on to stack
     LDR     R0,=counts          @ Starting memory location
     MOV     R1,#1024            @ Array size
+    MOV     R2,#0               @ Initial value
     BL      init_array          @ Initialize array
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
 init_sorted_chars:
-    @ Initialize the memory used for counting
+    @ Initialize the memory used for sorting
     PUSH    {R0-R12,LR}         @ Push registers on to stack
     LDR     R0,=sorted_chars    @ Starting memory location
     MOV     R1,#256             @ Array size
+    MOV     R2,#0xFFFFFFFF      @ Initial value
     BL      init_array          @ Initialize array
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
 
 init_array:
     @ Initialize an array - Array size must be divisible by 32
-    @ Arguments: R0 = Memory location of array, R1 = Array length in bytes
+    @ Arguments: R0 = Memory location of array, R1 = Array length in bytes, R2 = Value
     PUSH    {R0-R12,LR}         @ Push registers on to stack
     ADDS    R3,R0,R1            @ R3 = Ending memory location
     MOV     R4,R0               @ R4 = Current memory location
-    MOV     R5,#0               @ value to store
-    MOV     R6,#0               @ value to store
-    MOV     R7,#0               @ value to store
-    MOV     R8,#0               @ value to store
-    MOV     R9,#0               @ value to store
-    MOV     R10,#0              @ value to store
-    MOV     R11,#0              @ value to store
-    MOV     R12,#0              @ value to store
+    MOV     R5,R2               @ value to store
+    MOV     R6,R2               @ value to store
+    MOV     R7,R2               @ value to store
+    MOV     R8,R2               @ value to store
+    MOV     R9,R2               @ value to store
+    MOV     R10,R2              @ value to store
+    MOV     R11,R2              @ value to store
+    MOV     R12,R2              @ value to store
   init_array_loop:
     STMIA   R4!,{R5-R12}        @ Store 0 in the next 8 words of memory
     CMP     R4,R3               @ Have we reached the end of the array?
@@ -186,7 +194,8 @@ print_sorted:
     ADDS    R5,R4,#256          @ Ending memory location
   print_sorted_loop:
     LDRB    R0,[R4],#1          @ Load count and increment memory location
-    BLNE    print_sorted_line   @ Print the count line if we had a match
+    CMP     R0,#0xFF            @ Is this value being used?
+    BLNE    print_sorted_line   @ If so, print the count line
     CMP     R4,R5               @ Have we reached the end?
     BNE     print_sorted_loop   @ If not, loop again
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
