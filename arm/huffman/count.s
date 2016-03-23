@@ -1,5 +1,5 @@
 @ Count characters from STDIN
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab bg=dark: 
 @ vim: ft=arm 
 
 @ External Functions
@@ -24,7 +24,6 @@ count_from_file:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     MOV     R4,R0               @ R4 = File handle
   cff_loop:
-    MOV     R0,#0
     MOV     R0,R4               @ Set file handle
     LDR     R1,=buffer          @ Set buffer location
     MOV     R2,#4096            @ Set buffer size
