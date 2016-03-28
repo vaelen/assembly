@@ -3,7 +3,8 @@ Huffman Encoding in ARM Assembly
 
 This is a work-in-progress implementation of Huffman Encoding.
 
-TODO:
-1. Implement sort
-2. Sort the counts
-3. Build encoding tree
+Encoder TODO:
+1. Build encoding tree
+2. Write encoding tree to stream
+3. Encode text
+4. Write encoded text to stream

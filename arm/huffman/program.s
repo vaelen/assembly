@@ -18,5 +18,8 @@ _start:
     MOV     R0, #0              @ Set file handle to STDIN
     BL      count_from_file     @ Count characters from file handle
     BL      print_counts        @ Print counts
+    BL      init_sorted_chars   @ Initialize memory
+    BL      sort_chars          @ Sort characters
+    BL      print_sorted        @ Print sorted characters
     MOV     R0, #0              @ Normal return code
     B       exit                @ exit
