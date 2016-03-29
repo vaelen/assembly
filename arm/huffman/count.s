@@ -71,7 +71,7 @@ sort_chars:
     @ Copies the characters into an array sorted by occurance
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     LDR     R0,=sorted_chars    @ R0 = Memory location of sorted array
-    MOV     R1,#256             @ R1 = Length of sorted array
+    MOV     R1,#1280            @ R1 = Length of sorted array
     LDR     R2,=counts          @ R2 = Memory location of counts array
     MOV     R3,#256             @ R3 = Length of counts array
     MOV     R4,#0               @ R4 = Current sorted array index
@@ -94,12 +94,14 @@ sort_chars:
     CMP     R6,R7               @ Have we reached the end?
     BNE     sort_chars_loop     @ If not, loop again
   sort_chars_loop_done:
-    STRB    R9,[R0,R4]          @ Store max char at current sorted array index
-    MOV     R11,#0              @ Set max count to 0
     CMP     R10,#0              @ Did we find a max count?
     BLEQ    sort_chars_l_exit   @ If not, we're done
-    STR     R11,[R10]           @ Write 0 into the max count memory location
+    STRB    R9,[R0,R4]          @ Store max char at current sorted array index
     ADDS    R4,#1               @ Increment sorted array index
+    STR     R11,[R0,R4]         @ Store max count at current sorted array index + 1
+    ADDS    R4,#4               @ Increment sorted array index
+    MOV     R11,#0              @ Set max count to 0
+    STR     R11,[R10]           @ Write 0 into the max count memory location
     CMP     R4,R3               @ Have we reached the end of the sorted array?
     BLT     sort_chars_next     @ If not, do the whole thing again
   sort_chars_l_exit:
@@ -118,7 +120,7 @@ init_sorted_chars:
     @ Initialize the memory used for sorting
     PUSH    {R0-R12,LR}         @ Push registers on to stack
     LDR     R0,=sorted_chars    @ Starting memory location
-    MOV     R1,#256             @ Array size
+    MOV     R1,#1280            @ Array size
     MOV     R2,#0xFFFFFFFF      @ Initial value
     BL      init_array          @ Initialize array
     POP     {R0-R12,PC}         @ Return when loop completes, restore registers
@@ -191,11 +193,12 @@ print_sorted:
     PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
     BL      print_sorted_header @ Print header
     LDR     R4,=sorted_chars    @ Starting memory location
-    ADDS    R5,R4,#256          @ Ending memory location
+    ADDS    R5,R4,#1280         @ Ending memory location
   print_sorted_loop:
-    LDRB    R0,[R4],#1          @ Load count and increment memory location
+    LDRB    R0,[R4],#1          @ Load character and increment memory location
+    LDR     R1,[R4],#4          @ Load count and increment memory location
     CMP     R0,#0xFF            @ Is this value being used?
-    BLNE    print_sorted_line   @ If so, print the count line
+    BLNE    print_count_line    @ If so, print the count line
     CMP     R4,R5               @ Have we reached the end?
     BNE     print_sorted_loop   @ If not, loop again
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
@@ -206,24 +209,12 @@ print_sorted_header:
     BL      puts                @ |
     POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
 
-print_sorted_line:
-    @ Arguments: Character in R0
-    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
-    MOV     R4,R0               @ R4 = Character
-    LDR     R0,=line_part1      @ Print the first part of the line
-    BL      fputs               @ |
-    MOV     R0,R4               @ Convert character to a string
-    LDR     R1,=char_string     @ | Write to the char_string memory location
-    BL      itoa                @ | Get string representation
-    MOV     R0,R1               @ Print the character string
-    BL      puts                @ |
-    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
-
 .data
 
 counts: .space 1024
 counts_end: .word 0
-sorted_chars: .space 256
+@ Each element in the sorted character array is 5 bytes: a 1 byte char and a 4 byte count 
+sorted_chars: .space 1280
 char: .word 0
 buffer: .space 4096
 count_string: .asciz "0000000000" @ max 4294967296
