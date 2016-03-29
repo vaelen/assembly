@@ -1,5 +1,5 @@
 @ Sorting Related Methods
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
 @ vim: ft=arm 
 
 @ Exteral Methods
