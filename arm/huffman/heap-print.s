@@ -5,6 +5,7 @@
 .global puts
 .global fputs
 .global itoa
+.global int_string
 
 @ Exported Methods
 .global print_heap
@@ -47,14 +48,14 @@ print_heap_line:
     LDR     R0,=line_part1      @ Print the first part of the line
     BL      fputs               @ |
     MOV     R0,R4               @ Convert key to a string
-    LDR     R1,=word_string     @ | Write to the word_string memory location
+    LDR     R1,=int_string      @ | Write to the int_string  memory location
     BL      itoa                @ | Get string representation
     MOV     R0,R1               @ Print the key string
     BL      fputs               @ |
     LDR     R0,=line_part2      @ Print the second part of the line
     BL      fputs               @ |
     MOV     R0,R5               @ Convert value to a string
-    LDR     R1,=word_string     @ | Write to the word_string memory location
+    LDR     R1,=int_string      @ | Write to the int_string  memory location
     BL      itoa                @ | Get string representation
     MOV     R0,R1               @ Print the value string
     BL      puts                @ |
@@ -62,7 +63,6 @@ print_heap_line:
 
 .data
 
-word_string: .asciz "0000000000" @ max 4294967296
 header: .asciz "Heap:"
 line_part1: .asciz "\tKey: "
 line_part2: .asciz "\tValue: "

@@ -12,6 +12,7 @@
 .global strlen
 .global fputs
 .global puts
+.global int_string
 
 newline:
     @ Print a newline character
