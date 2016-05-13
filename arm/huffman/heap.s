@@ -118,10 +118,10 @@ heap_remove:
     BGT     heap_remove_done    @   If so then return
     LSL     R10, R9, #3         @ Find the memory location of the left child node by R9 * 8
     ADDS    R10, R6             @   Then add the start of the heap
-    CMP     R9, R4              @ Is the left child the last node?
+    CMP     R9, R4              @ Is the left child the last node? (is R9 == R4?)
     BEQ     heap_sift_one_node  @   If so then no need to find smallest node
     ADDS    R11, R9, #1         @ R11 = Right child index (R9 + 1)
-    LSL     R12, R11, #3        @ Find the memory location of the right child node by R10 * 8
+    LSL     R12, R11, #3        @ Find the memory location of the right child node by R11 * 8
     ADDS    R12, R6             @   Then add the start of the heap
     LDR     R0, [R10]           @ R0 = Left child key
     LDR     R1, [R12]           @ R1 = Right child key
@@ -129,7 +129,7 @@ heap_remove:
     MOVGE   R2, R1              @ Right child is smaller, R2 = Key
     MOVGE   R0, R11             @ Right child is smaller, R0 = Index
     MOVGE   R1, R12             @ Right child is smaller, R1 = Location
-    MOVLT   R2, R0              @ Left child is smaller, R0 = Key
+    MOVLT   R2, R0              @ Left child is smaller, R2 = Key
     MOVLT   R0, R9              @ Left child is smaller, R0 = Index
     MOVLT   R1, R10             @ Left child is smaller, R1 = Location
     B       heap_sift_down2     @ Continue the sifting
@@ -148,8 +148,8 @@ heap_remove:
     STR     R12, [R7, #4]       @ Swap value at current location
     STR     R9,  [R1]           @ Swap key at smallest child location
     STR     R10, [R1, #4]       @ Swap value at smallest child location
-    MOV     R7, R0              @ Change current index to smallest child index
-    MOV     R8, R1              @ Change current location to smallest child location
+    MOV     R8, R0              @ Change current index to smallest child index
+    MOV     R7, R1              @ Change current location to smallest child location
     B       heap_sift_down      @ Sift again
   heap_remove_done:
     POP     {R2}                @ Pop the new heap size back off the stack
