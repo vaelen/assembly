@@ -37,9 +37,8 @@ heap_add:
     LDR     R4, [R3]            @ R4 = Current heap size
     LDR     R5, [R3, #4]        @ R5 = Maximum heap size
     ADDS    R6, R3, #8          @ R6 = Start of the heap
-    MOV     R0, #1              @ R0 = Return value (1 = failure)
     CMP     R4, R5              @ Compare the curret heap size to the maximum heap size
-    BGE     heap_add_done       @   If there isn't space in the heap, return failure
+    BGE     heap_add_err        @   If there isn't space in the heap, return failure
     LSL     R7, R4, #3          @ Find the end of the heap by multiplying R4 * 8
     ADDS    R7, R6              @   Then add the start of the heap
     STR     R1, [R7]            @ Store the key in the first word
@@ -48,7 +47,6 @@ heap_add:
     STR     R4, [R3]            @ Store heap size
     MOV     R8, R4              @ R8 = Current index, R7 = Memory location of current index
   heap_sift_up:
-    MOV     R0, #0              @ Set return code to success (0)
     CMP     R8, #0              @ Is this the root node?
     BEQ     heap_add_done       @   If so then return true
     MOV     R0, R8              @ Divide current position
@@ -61,7 +59,6 @@ heap_add:
     LDR     R1,  [R7, #4]       @ R1  = Value at current location
     LDR     R12, [R10]          @ R12 = Key at parent node location
     LDR     R2,  [R10, #4]      @ R2  = Value at parent node location
-    MOV     R0, #0              @ Set return code to success (0)
     CMP     R12, R11            @ Compare parent key with current key
     BLE     heap_add_done       @   If parent key is <= current key, return success
     STR     R11, [R10]          @ Otherwise
@@ -71,7 +68,12 @@ heap_add:
     MOV     R8, R9              @ Set current index to the parent node's index
     MOV     R7, R10             @ Set current location to parent node location
     B       heap_sift_up        @ Sift again
+  heap_add_err:
+    MOV     R0, #1              @ Failure
+    B       heap_add_exit       @ Return
   heap_add_done:
+    MOV     R0, #0              @ Success
+  heap_add_exit:
     POP     {R3-R12,PC}         @ Pop the registers off of the stack and return
 
 heap_remove:

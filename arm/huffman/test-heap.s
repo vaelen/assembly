@@ -92,6 +92,8 @@ _start:
 
   add_done:
 
+BL exit
+
     BL      newline             @ Print a newline
 
     LDR     R0, =step3          @ Set message
