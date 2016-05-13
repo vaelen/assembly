@@ -92,7 +92,7 @@ _start:
 
   add_done:
 
-BL exit
+@BL exit
 
     BL      newline             @ Print a newline
 
