@@ -43,9 +43,9 @@ heap_add:
     ADDS    R7, R6              @   Then add the start of the heap
     STR     R1, [R7]            @ Store the key in the first word
     STR     R2, [R7, #4]        @ Store the value in the second word
+    MOV     R8, R4              @ R8 = Current index, R7 = Memory location of current index
     ADDS    R4, #1              @ Increment heap size
     STR     R4, [R3]            @ Store heap size
-    MOV     R8, R4              @ R8 = Current index, R7 = Memory location of current index
   heap_sift_up:
     CMP     R8, #0              @ Is this the root node?
     BEQ     heap_add_done       @   If so then return true
