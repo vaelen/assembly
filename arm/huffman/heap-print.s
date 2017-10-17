@@ -1,19 +1,21 @@
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
-@ vim: ft=arm 
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
+@@@ vim: ft=arm 
 
-@ Exteral Methods
-.global puts
-.global fputs
-.global itoa
-.global int_string
+@@@ Exteral Methods
+    .global puts
+    .global fputs
+    .global itoa
+    .global int_string
 
-@ Exported Methods
-.global print_heap
+@@@ Exported Methods
+    .global print_heap
 
+@@@ Code Section
+    
 print_heap:
-    @ Prints a heap
-    @ Arguments:
-    @   R0 = Memory address of heap
+    @@ Prints a heap
+    @@ Arguments:
+    @@   R0 = Memory address of heap
     PUSH    {R0-R7,LR}          @ Push the existing registers on to the stack
     MOV     R6, R0              @ R6 = Memory address of heap
     LDR     R7, [R6]            @ R7 = Heap size
@@ -23,13 +25,13 @@ print_heap:
     ADDS    R4, R6, #8          @ R4 = Start of the heap
     LSL     R5, R7, #3          @ Find the end of the heap by multiplying R7 * 8
     ADDS    R5, R5, R4          @   Then adding the start address
-  print_heap_loop:
+print_heap_loop:
     LDR     R0, [R4], #4        @ Load key and increment memory location
     LDR     R1, [R4], #4        @ Load value and increment memory location
     BL      print_heap_line     @ Print the heap line if we had a match
     CMP     R4, R5              @ Have we reached the end?
     BLT     print_heap_loop     @ If not, loop again
-  print_heap_done:
+print_heap_done:
     POP     {R0-R7,PC}          @ Pop the registers off of the stack and return
 
 print_heap_header:
@@ -39,9 +41,9 @@ print_heap_header:
     POP     {R0,PC}             @ Pop the registers off of the stack and return
 
 print_heap_line:
-    @ Arguments:  
-    @   R0 = Key
-    @   R1 = Value
+    @@ Arguments:  
+    @@   R0 = Key
+    @@   R1 = Value
     PUSH    {R0-R5,LR}          @ Push the existing registers on to the stack
     MOV     R4,R0               @ R4 = Key
     MOV     R5,R1               @ R5 = Value
@@ -61,7 +63,9 @@ print_heap_line:
     BL      puts                @ |
     POP     {R0-R5,PC}          @ Pop the registers off of the stack and return
 
-.data
+@@@ Data Section
+    
+    .data
 
 header: .asciz "Heap:"
 line_part1: .asciz "\tKey: "

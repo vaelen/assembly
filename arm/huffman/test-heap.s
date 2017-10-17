@@ -1,20 +1,22 @@
-@ Test heap functions
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
-@ vim: ft=arm 
+@@@ Test heap functions
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
+@@@ vim: ft=arm 
 
-@ External Methods
-.global heap_init
-.global heap_add
-.global heap_remove
-.global heap_print
-.global itoa
-.global int_string
-.global puts
-.global exit
+@@@ External Methods
+    .global heap_init
+    .global heap_add
+    .global heap_remove
+    .global heap_print
+    .global itoa
+    .global int_string
+    .global puts
+    .global exit
 
-@ Exported Methods
-.global _start
+@@@ Exported Methods
+    .global _start
 
+@@@ Code Section
+    
 _start:
     LDR     R0, =step1          @ Set message
     BL      puts                @ Print message
@@ -49,11 +51,10 @@ _start:
     BL      heap_init           @ Initialize the heap
 
     LDR     R0, =heap           @ Set heap address
-    BL      print_heap        	@ Print heap
+    BL      print_heap          @ Print heap
     BL      newline             @ Print a newline
 
-  add_loop:
-
+add_loop:
     LDR     R0, =step2          @ Set message
     BL      puts                @ Print message
 
@@ -82,18 +83,15 @@ _start:
     LDR     R0, =heap           @ Set heap address
     MOV     R1, R11             @ Key
     MOV     R2, R12             @ Value
-    BL      heap_add        	@ Add to the heap
+    BL      heap_add            @ Add to the heap
 
     LDR     R0, =heap           @ Set heap address
-    BL      print_heap        	@ Print heap
+    BL      print_heap          @ Print heap
     BL      newline             @ Print a newline
 
     B       add_loop            @ Loop
 
-  add_done:
-
-@BL exit
-
+add_done:
     BL      newline             @ Print a newline
 
     LDR     R0, =step3          @ Set message
@@ -102,7 +100,7 @@ _start:
 
     MOV     R2, #1              @ Seed loop value
 
-  remove_loop:
+remove_loop:
     CMP     R2, #0              @ If the heap is empty
     BEQ     remove_done
 
@@ -110,7 +108,7 @@ _start:
     BL      puts                @ Print message
 
     LDR     R0, =heap           @ Set heap address
-    BL      heap_remove     	@ Remove from the heap
+    BL      heap_remove         @ Remove from the heap
     MOV     R11, R0             @ Save key
     MOV     R12, R1             @ Save value
 
@@ -131,18 +129,20 @@ _start:
     BL      puts                @ Print value
 
     LDR     R0, =heap           @ Set heap address
-    BL      print_heap        	@ Print heap
+    BL      print_heap          @ Print heap
     BL      newline             @ Print a newline
 
     B       remove_loop         @ Loop
 
-  remove_done:
+remove_done:
 
     B       exit                @ exit
 
-.data
+@@@ Data Section
+    
+    .data
 
-@ 16 elements * 8 bytes per element = 128 + 2 = 130
+@@ 16 elements * 8 bytes per element = 128 + 2 = 130
 heap: .space 130
 step1: .asciz "Building Heap"
 step2: .asciz "Adding Value"

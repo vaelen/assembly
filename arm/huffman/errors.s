@@ -1,14 +1,16 @@
-@ Helper methods for error checking
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
-@ vim: ft=arm 
+@@@ Helper methods for error checking
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@@@ vim: ft=arm 
 
-@ External procedures
-.global puts
-.global newline
+@@@ External procedures
+    .global puts
+    .global newline
 
-@ Exported procedures
-.global check_read_error
+@@@ Exported procedures
+    .global check_read_error
 
+@@@ Code Section
+    
 check_read_error:
     PUSH    {R0,R1,LR}
     MOV     R1,R0
@@ -31,9 +33,11 @@ check_read_error:
     BLNE    puts         
     POP     {R0,R1,PC}
 
+@@@ Data Section
+    
 .data
 
-@ Error Codes
+@@@ Error Codes
 eintr:  .asciz "[ERROR] Interrupted System Call: The call was interrupted by a signal before any data was read."
 eio:    .asciz "[ERROR] I/O Error"
 ebadf:  .asciz "[ERROR] Bad File Number: Not a valid file descriptor"

@@ -1,17 +1,19 @@
-@ Count characters from STDIN
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
-@ vim: ft=arm 
+@@@ Count characters from STDIN
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@@@ vim: ft=arm 
 
-@ External Methods
-.global status
-.global init_counts
-.global count_from_file
-.global print_counts
-.global exit
+@@@ External Methods
+    .global status
+    .global init_counts
+    .global count_from_file
+    .global print_counts
+    .global exit
 
-@ Exported Methods
-.global _start
+@@@ Exported Methods
+    .global _start
 
+@@@ Code Section
+    
 _start:
     BL      status              @ Print status
     BL      init_counts         @ Initialize memory

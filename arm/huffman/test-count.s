@@ -1,24 +1,26 @@
-@ Count characters from STDIN
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
-@ vim: ft=arm 
+@@@ Count characters from STDIN
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@@@ vim: ft=arm 
 
-@ External Methods
-.global status
-.global init_counts
-.global init_sorted_chars
-.global count_from_file
-.global print_counts
-.global sorted
-.global print_sorted
-.global sort_chars
-.global print_sorted
-.global open_read
-.global check_read_error
-.global exit
+@@@ External Methods
+    .global status
+    .global init_counts
+    .global init_sorted_chars
+    .global count_from_file
+    .global print_counts
+    .global sorted
+    .global print_sorted
+    .global sort_chars
+    .global print_sorted
+    .global open_read
+    .global check_read_error
+    .global exit
 
-@ Exported Methods
-.global _start
+@@@ Exported Methods
+    .global _start
 
+@@@ Code Section
+    
 _start:
     BL      status              @ Print status
     BL      init_counts         @ Initialize memory
@@ -36,6 +38,8 @@ _start:
     MOV     R0, #0              @ Normal return code
     B       exit                @ exit
 
-.data
+@@@ Data Section
+    
+    .data
 
 path: .asciz "test-count.txt"

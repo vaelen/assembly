@@ -1,24 +1,26 @@
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
-@ vim: ft=arm 
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
+@@@ vim: ft=arm 
 
-@ This module includes procedures for working with minimum binary heaps.
-@ The current size and maximum size of the heap are stored as part of the heap structure.
-@ Each entry in the heap is two words. 
-@   The first is the key used for sorting.
-@   The second is an optional data value.
+@@@ This module includes procedures for working with minimum binary heaps.
+@@@ The current size and maximum size of the heap are stored as part of the heap structure.
+@@@ Each entry in the heap is two words. 
+@@@   The first is the key used for sorting.
+@@@   The second is an optional data value.
 
-@ Exteral Methods
-.global div
+@@@ Exteral Methods
+    .global div
 
-@ Exported Methods
-.global heap_init
-.global heap_add
-.global heap_remove
+@@@ Exported Methods
+    .global heap_init
+    .global heap_add
+    .global heap_remove
 
+@@@ Code Section
+    
 heap_init:
-    @ Initializes a heap structure
-    @   R0 = Heap location
-    @   R1 = Max heap size
+    @@ Initializes a heap structure
+    @@   R0 = Heap location
+    @@   R1 = Max heap size
     PUSH    {R2,LR}             @ Push the existing registers on to the stack
     MOV     R2, #0              @ This will be used below
     STR     R2, [R0]            @ Set the initial size to 0
@@ -26,12 +28,12 @@ heap_init:
     POP     {R2,PC}             @ Pop the registers off of the stack and return
 
 heap_add:
-    @ Adds a key/value pair to a heap.
-    @ Returns 0 on success, 1 on failure
-    @ Arguments: 
-    @   R0 = Heap location
-    @   R1 = Key
-    @   R2 = Value
+    @@ Adds a key/value pair to a heap.
+    @@ Returns 0 on success, 1 on failure
+    @@ Arguments: 
+    @@   R0 = Heap location
+    @@   R1 = Key
+    @@   R2 = Value
     PUSH    {R3-R12,LR}         @ Push the existing registers on to the stack
     MOV     R3, R0              @ R3 = Heap location
     LDR     R4, [R3]            @ R4 = Current heap size
@@ -46,7 +48,7 @@ heap_add:
     MOV     R8, R4              @ R8 = Current index, R7 = Memory location of current index
     ADDS    R4, #1              @ Increment heap size
     STR     R4, [R3]            @ Store heap size
-  heap_sift_up:
+heap_sift_up:
     CMP     R8, #0              @ Is this the root node?
     BEQ     heap_add_done       @   If so then return true
     MOV     R0, R8              @ Divide current position
@@ -68,22 +70,22 @@ heap_add:
     MOV     R8, R9              @ Set current index to the parent node's index
     MOV     R7, R10             @ Set current location to parent node location
     B       heap_sift_up        @ Sift again
-  heap_add_err:
+heap_add_err:
     MOV     R0, #1              @ Failure
     B       heap_add_exit       @ Return
-  heap_add_done:
+heap_add_done:
     MOV     R0, #0              @ Success
-  heap_add_exit:
+heap_add_exit:
     POP     {R3-R12,PC}         @ Pop the registers off of the stack and return
 
 heap_remove:
-    @ Remove the lowest key/value pair from the heap.
-    @ Arguments: 
-    @   R0 = Heap location
-    @ Returns:
-    @   R0 = Returned Key
-    @   R1 = Returned Value
-    @   R2 = New Heap Size
+    @@ Remove the lowest key/value pair from the heap.
+    @@ Arguments: 
+    @@   R0 = Heap location
+    @@ Returns:
+    @@   R0 = Returned Key
+    @@   R1 = Returned Value
+    @@   R2 = New Heap Size
     PUSH    {R3-R12,LR}         @ Push the existing registers on to the stack
     MOV     R3, R0              @ R3 = Heap location
     LDR     R4, [R3]            @ R4 = Current heap size
@@ -111,7 +113,7 @@ heap_remove:
     PUSH    {R4}                @ Push new heap size onto the stack
     MOV     R7, R6              @ R7 = Memory location of current index
     MOV     R8, #0              @ R8 = Current index
-  heap_sift_down:
+heap_sift_down:
     LSL     R9, R8, #1          @ R9 = Left child index (R8 * 2)
     ADDS    R9, #1              @   + 1
     CMP     R9, R4              @ Is the left child past the last node?
@@ -133,11 +135,11 @@ heap_remove:
     MOVLT   R0, R9              @ Left child is smaller, R0 = Index
     MOVLT   R1, R10             @ Left child is smaller, R1 = Location
     B       heap_sift_down2     @ Continue the sifting
-  heap_sift_one_node:
+heap_sift_one_node:
     MOV     R0, R9              @ R0 = Left child index
     MOV     R1, R10             @ R1 = Left child location
     LDR     R2, [R10]           @ R2 = Left child key
-  heap_sift_down2:
+heap_sift_down2:
     LDR     R9,  [R7]           @ Key at current location
     LDR     R10, [R7, #4]       @ Value at current location
     CMP     R2, R9              @ Compare smallest child key with current key
@@ -151,7 +153,7 @@ heap_remove:
     MOV     R8, R0              @ Change current index to smallest child index
     MOV     R7, R1              @ Change current location to smallest child location
     B       heap_sift_down      @ Sift again
-  heap_remove_done:
+heap_remove_done:
     POP     {R2}                @ Pop the new heap size back off the stack
     POP     {R0,R1}             @ Pop the return values back off the stack
     POP     {R3-R12,PC}         @ Pop the registers off of the stack and return
