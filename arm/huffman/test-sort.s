@@ -25,10 +25,15 @@ _start:
 	BL      test_sort           @
 */	    
 
-	LDR     R0,=rsort           @ Radix Sort
-    LDR     R1,=rsort_title     @
+/*
+	LDR     R0,=qsort           @ Quick Sort
+    LDR     R1,=qsort_title     @
 	BL      test_sort           @
-
+*/
+    
+	LDR     R0,=rsort           @ Radix Sort
+	LDR     R1,=rsort_title     @
+	BL      test_sort           @
 
 	MOV     R0,#0               @ Normal return code
 	B       exit                @ exit
@@ -110,4 +115,5 @@ unsorted: .asciz "Unsorted List:"
 sorted: .asciz "Sorted List:"
 bsort_title: .asciz "-=Bubble Sort=-"
 rsort_title: .asciz "-=Radix Sort=-"
+qsort_title: .asciz "-=Quick Sort=-"
 array: .space 16

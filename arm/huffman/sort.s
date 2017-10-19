@@ -48,7 +48,9 @@ qsort:
     MOV     R4,R0               @ R4 = Array Location
     MOV     R5,R1               @ R5 = Array size
     CMP     R5,#1               @ Check for an array of size <= 1
-    BLS     qsort_done          @ If array size <= 1, return
+    BLE     qsort_done          @ If array size <= 1, return
+    CMP     R5,#2               @ Check for an array of size == 2
+    BEQ     qsort_check         @ If array size == 2, check values
     MOV     R0,R5               @ Divide the array size by two
     MOV     R1,#2               @ |
     BL      div                 @ |
@@ -59,8 +61,14 @@ qsort:
     ADDS    R0,R4,R6,LSL #2     @ Location of the middle of the array (R4 + (R6*4))
     SUBS    R1,R5,R6            @ Size of the second half of the array (R5 - R6)
     BL      qsort               @ Sort first half of array
+qsort_check:
+    LDR     R0,[R4]             @ Load first value into R0
+    LDR     R1,[R4,#4]          @ Load second value into R1
+    CMP     R0,R1               @ Compare R0 and R1
+	STRGT   R1,[R4]             @ If R0 > R1, swap values
+	STRGT   R0,[R4,#4]          @ 
 qsort_done:
-    POP     {R0-R6,PC}          @ Pop the registers off of the stack and return
+	POP     {R0-R6,PC}          @ Pop the registers off of the stack and return
 
 rsort:
     @@ Radix MSD sort an array of 32bit integers
