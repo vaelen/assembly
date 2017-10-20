@@ -78,64 +78,29 @@ qsort_done:
 rsort:
     @@ Radix MSD sort an array of 32bit integers
     @@ Arguments: R0 = Array location, R1 = Array size
-    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    PUSH    {R0-R2,LR}          @ Push the existing registers on to the stack
     CMP     R1,#1               @ Check for an empty or single member array
     POPLE   {R0-R7,PC}          @ If so, return to where we came from
     ADD     R1,R0,R1,LSL #2     @ R1 = End of the array (R0 + (R1*4))
     SUB     R1,R1,#4            @ 
     MOV     R2,#1               @ R2 = Bitmask
     LSL     R2,R2,#31           @   most significant bit
-    MOV     R8,#0               @ R8 = recursion depth (debug)
-    MOV     R12,#0              @ R12 = Loop counter (debug)
     BL      rsort_recurse       @ Begin recursion
-    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
-
-rsort_debug:
-    @@ Print rsort debugging information
-    @@ Arguments: R6 = Start of array, R7 = End of array, R2 = Bitmask
-    @@            R8 = Recursion Depth
-    PUSH    {R0-R1,LR}          @ Stack frame
-    MOV     R0,R8               @ Convert depth to string
-    LDR     R1,=depth_value     @
-    BL      itoa                @
-    LDR     R0,=depth_header    @ Print depth header
-    BL      fputs               @
-    LDR     R0,=depth_value     @ Print depth
-    BL      puts                @
-    MOV     R0,R12              @ Convert loop counter to string
-    LDR     R1,=loop_value      @
-    BL      itoa                @
-    LDR     R0,=loop_header     @ Print loop header
-    BL      fputs               @
-    LDR     R0,=loop_value      @ Print loop counter
-    BL      puts                @
-    LDR     R0,=bitmask_header  @ Print bitmask header
-    BL      fputs               @
-    MOV     R0,R2               @ Print bitmask
-    BL      print_r0_binary     @
-    LDR     R0,=memory_header   @ Print memory header
-    BL      puts                @
-    MOV     R0,R6               @ Print memory contents
-    MOV     R1,R7               @
-    BL      print_memory_binary @
-    BL      newline             @ Print an empty line
-    POP     {R0-R1,PC}          @ Return
+    POP     {R0-R2,PC}          @ Pop the registers off of the stack and return
     
 rsort_recurse:
     @@ Radix MSD sort an array of 32bit integers (recursive helper)
-    @@ Arguments: R0 = Array start, R1 = Array end, R2 = Bitmask, R8 = Recursion Depth (debug)
-    PUSH    {R0-R9,LR}          @ Store previous values
-    SUB     R9,R1,R0            @ Check array length
-    CMP     R9,#4               @ 
+    @@ Arguments: R0 = Array start, R1 = Array end, R2 = Bitmask
+    PUSH    {R0-R8,LR}          @ Store previous values
+    SUB     R8,R1,R0            @ Check array length
+    CMP     R8,#4               @ 
     BLT     rr_done             @ Return if array is empty or only has 1 entry
     MOV     R3,R0               @ R3 = 0's bin pointer (start of array)
     MOV     R4,R1               @ R4 = 1's bin pointer (end of array)
     MOV     R5,#0               @ R5 = Current value
     MOV     R6,R0               @ Set original array start (debug)
     MOV     R7,R1               @ Set original array end (debug)
-    ADD     R8,#1               @ Increase recursion depth (debug)
 rr_0loop:
-    ADD     R12,#1              @ Increment loop counter (debug)
     LDR     R5,[R3]             @ Load next value from pointer
     TST     R5,R2               @ Check bitmask
     BEQ     rr_0loop_next       @ If the value is 0, loop
@@ -179,7 +144,7 @@ rr_swap:
     POP     {PC}                @ Return
 rr_done:
     //BL      rsort_debug
-    POP     {R0-R9,PC}          @ Restore previous values   
+    POP     {R0-R8,PC}          @ Restore previous values   
 
 swap:
     @@ Swaps the values from 2 memory locations
@@ -191,13 +156,3 @@ swap:
     STR     R3,[R1]             @ Store value 2 in memory location 1
     STR     R4,[R0]             @ Store value 1 in memory location 2
     POP     {R0-R4,PC}          @ Return
-
-    
-@@@  Data Section
-    .data
-depth_header:       .asciz "Depth:   "
-depth_value:        .asciz "00000"
-memory_header:      .asciz "Bin:"
-bitmask_header:     .asciz "Bitmask: "    
-loop_header:        .asciz "Loop: "
-loop_value:         .asciz "000000000000"
