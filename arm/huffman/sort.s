@@ -6,6 +6,9 @@
     .global div
     .global print_memory_binary
     .global newline
+    .global itoa
+    .global fputs
+    .global puts
     
 @@@ Exported Methods
     .global bsort
@@ -73,36 +76,49 @@ qsort_done:
 rsort:
     @@ Radix MSD sort an array of 32bit integers
     @@ Arguments: R0 = Array location, R1 = Array size
+	PUSH    {R0-R12,LR}          @ Push the existing registers on to the stack
     CMP     R1,#1               @ Check for an empty or single member array
-    BXLE    LR                  @ If so, return to where we came from
-    PUSH    {R0-R5,LR}          @ Push the existing registers on to the stack
+    POPLE   {R0-R7,PC}          @ If so, return to where we came from
     ADD     R1,R0,R1,LSL #2     @ R1 = End of the array (R0 + (R1*4))
     SUB     R1,R1,#4            @ 
     MOV     R2,#1               @ R2 = Bitmask
     LSL     R2,R2,#4            @   most significant bit
+    MOV     R6,#0               @ R6 = recursion depth
     BL      rsort_recurse       @ Begin recursion
-    POP     {R0-R5,PC}          @ Pop the registers off of the stack and return
+    POP     {R0-R12,PC}          @ Pop the registers off of the stack and return
 
 rsort_debug:
     @@ Print rsort debugging information
-    @@ Arguments: R0 = Start of array, R1 = End of array, R2 = Bitmask
-    PUSH    {R0-R3,LR}          @ Stack frame
-    MOV     R3,R0               @ R3 = Start of array
-    LDR     R0,=bitmask_header  @ Print bitmask header
+    @@ Arguments: R8 = Start of array, R9 = End of array, R2 = Bitmask
+    @@            R6 = Recursion Depth, R7 = Direction 
+    PUSH    {R0-R1,LR}          @ Stack frame
+    MOV     R0,R6               @ Convert depth to string
+    LDR     R1,=depth_value     @
+    BL      itoa                @
+	LDR     R0,=depth_header    @ Print depth header
+	BL      fputs               @
+    LDR     R0,=depth_value     @ Print depth
     BL      puts                @
+    LDR     R0,=bitmask_header  @ Print bitmask header
+    BL      fputs               @
     MOV     R0,R2               @ Print bitmask
     BL      print_r0_binary     @
     LDR     R0,=memory_header   @ Print memory header
     BL      puts                @
-    MOV     R0,R3               @ Print memory contents
+    MOV     R0,R8               @ Print memory contents
+    MOV     R1,R9               @
     BL      print_memory_binary @
     BL      newline             @ Print an empty line
-    POP     {R0-R3,PC}          @ Return
+    POP     {R0-R1,PC}          @ Return
     
 rsort_recurse:
     @@ Radix MSD sort an array of 32bit integers (recursive helper)
     @@ Arguments: R0 = Array start, R1 = Array end, R2 = Bitmask
     PUSH    {LR}                @ Store previous values
+    ADD     R6,#1               @ Increase recursion depth (debug)
+    MOV     R7,#0               @ Set direction to Entering (debug)
+    MOV     R8,R0               @ Set original array start (debug)
+    MOV     R9,R1               @ Set original array end (debug)
     BL      rsort_debug         @ Debug output
     CMP     R0,R1               @ Check array length
     BEQ     rr_done             @ Return if array is empty
@@ -151,11 +167,19 @@ rr_swap:
     POP     {R5}                @ Pull the current value off the stack
     STR     R5,[R4]             @ Place the 0's bin value into the 1's bin
     POP     {R5,PC}             @ Return
-rr_done: 
+rr_done:
+    SUBS    R6,#1               @ Decrease recursion depth (debug)
+    MOV     R7,#1               @ Set direction to Returning (debug)
+    BL      rsort_debug         @ Print debug information
     POP     {PC}                @ Restore previous values   
 
 @@@  Data Section
     .data
-memory_header:  .asciz "Bin:"
-bitmask_header: .asciz "Bitmask:"
+depth_header:       .asciz "Depth:   "
+depth_value:        .asciz "00000"
+memory_header:      .asciz "Bin:"
+bitmask_header:     .asciz "Bitmask: "
+direction_header:   .asciz "Direction: "
+d_entering:         .asciz "Entering"
+d_returning:        .asciz "Returning"
     
