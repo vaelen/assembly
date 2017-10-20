@@ -4,6 +4,7 @@
 
 @@@ External Methods
     .global itoa
+    .global write
 
 @@@ Exported Methods
     .global newline
@@ -80,14 +81,13 @@ print_memory_binary:
     MOV     R3,R1               @ R3 = Last memory location
     LDR     R1,=binary_string   @ Memory location of the string to print
 pmb_loop:
-    CMP     R2,R3               @ Are we done?
-    BGT     pmb_done            @ If so, return
     LDR     R0,[R2]             @ Load word of memory into R0
     BL      word_to_binary      @ Convert R0 to binary
     MOV     R0,R1               @ Print the string
     BL      puts                @
     ADD     R2,#4               @ Increment the memory location
-    B       pmb_loop            @ Loop
+    CMP     R2,R3               @ Are we done?
+    BLE     pmb_loop            @ If not, loop
 pmb_done:   
     POP     {R0-R3,PC}          @ Return
     
@@ -97,18 +97,17 @@ puts:
     BL      fputs               @ Print the null terminated string at R0
     BL      newline             @ Print a newline character
     POP     {R0,PC}             @ Return when loop completes, restore registers
-
+                
 fputs:
     @@ Print the null terminated string at R0
-    PUSH    {R0-R12,LR}         @ Push the existing registers on to the stack
+    PUSH    {R0-R3,LR}         @ Push the existing registers on to the stack
     BL      strlen              @ Get the length of the string
     MOV     R2,R1               @ String length is in R1
     MOV     R1,R0               @ String starts at R0
     MOV     R0,#1               @ Write to STDOUT
-    MOV     R7,#4               @ Syscall number
-    SWI     0                   @ Perform system call
-    POP     {R0-R12,PC}         @ Pop the registers off of the stack and return
-
+    BL      write               @ Call write system call
+    POP     {R0-R3,PC}         @ Pop the registers off of the stack and return
+    
 strlen:
     @@ Finds the length of the string at address R0
     @@ Returns the length in R1

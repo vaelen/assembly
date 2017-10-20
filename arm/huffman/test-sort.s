@@ -1,42 +1,42 @@
-@ Test Sorting Related Methods
-@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
-@ vim: ft=arm 
+@@@ Test Sorting Related Methods
+@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab: 
+@@@ vim: ft=arm 
 
-@ Exteral Methods
-.global bsort
-.global rsort
-.global puts
-.global print_r0
-.global print_r0_binary
-.global exit
+@@@ Exteral Methods
+    .global bsort
+    .global rsort
+    .global puts
+    .global print_r0
+    .global print_r0_binary
+    .global newline
+    .global getrandom
+    .global exit
 
-@ Exported Methods
+@@@ Exported Methods
 .global _start
 
 _start:
-    /*
-	MOV     R0,#128
-	BL      test_binary
-	*/  
-
 /*
+    MOV     R0,#128
+    BL      test_binary
+*/  
+
     LDR     R0,=bsort           @ Bubble Sort
     LDR     R1,=bsort_title     @
-	BL      test_sort           @
-*/	    
+    BL      test_sort           @
 
 /*
-	LDR     R0,=qsort           @ Quick Sort
+    LDR     R0,=qsort           @ Quick Sort
     LDR     R1,=qsort_title     @
-	BL      test_sort           @
+    BL      test_sort           @
 */
     
-	LDR     R0,=rsort           @ Radix Sort
-	LDR     R1,=rsort_title     @
-	BL      test_sort           @
+    LDR     R0,=rsort           @ Radix Sort
+    LDR     R1,=rsort_title     @
+    BL      test_sort           @
 
-	MOV     R0,#0               @ Normal return code
-	B       exit                @ exit
+    MOV     R0,#0               @ Normal return code
+    B       exit                @ exit
 
 test_binary:
     @@ Print binary values
@@ -63,51 +63,54 @@ test_sort:
     LDR     R0,=unsorted        @ Print the unsorted header string
     BL      puts                @ |
     BL      print_array         @ Print array
+    BL      newline             @ Print newline
     LDR     R0,=array           @ Set array location
-    MOV     R1,#8               @ Set array size
+    MOV     R1,#64              @ Set array size
     BLX     R2                  @ Sort
     LDR     R0,=sorted          @ Print the sorted header string
     BL      puts                @ |
     BL      print_array         @ Print array
-	POP     {R0-R2,PC}          @ Pop the registers off of the stack and return
+    BL      newline             @ Print newline
+    POP     {R0-R2,PC}          @ Pop the registers off of the stack and return
     
 init_array:
     @@ Initialize the array
-    PUSH    {R0-R8,LR}          @ Push the existing registers on to the stack
+    PUSH    {R0-R2,LR}          @ Push the existing registers on to the stack
     LDR     R0,=array           @ Location of the array
-    MOV     R1,#7               @ array[0]
-    MOV     R2,#3               @ array[1]
-    MOV     R3,#2               @ array[2]
-    MOV     R4,#8               @ array[3]
-    MOV     R5,#1               @ array[4]
-    MOV     R6,#4               @ array[5]
-    MOV     R7,#6               @ array[6]
-    MOV     R8,#5               @ array[7]
-    STMIA   R0,{R1-R8}          @ Store the array data
-    POP     {R0-R8,PC}          @ Pop the registers off of the stack and return
+    MOV     R1,#256             @ Number of random bytes to read
+    MOV     R2,#0               @ Flags (default values)
+    BL      getrandom
+    POP     {R0-R2,PC}          @ Pop the registers off of the stack and return
     
 print_array:
     @@ Print the array
-    PUSH    {R0-R8,LR}          @ Push the existing registers on to the stack
-    LDR     R0,=array           @ Location of the array
-    LDMIA   R0,{R1-R8}          @ Load the array data
+    PUSH    {R0-R10,LR}         @ Push the existing registers on to the stack
+    LDR     R9,=array           @ Location of the array
+    MOV     R10,#64             @ Array size
+pa_loop:
+    MOV     R0,R9               @ Load the array data
+    LDMIA   R0,{R1-R8}          @ 
     MOV     R0,R1               @ Print array[0]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R2               @ Print array[1]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R3               @ Print array[2]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R4               @ Print array[3]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R5               @ Print array[4]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R6               @ Print array[5]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R7               @ Print array[6]
-    BL      print_r0            @ |
+    BL      print_r0            @ 
     MOV     R0,R8               @ Print array[7]
-    BL      print_r0            @ |
-    POP     {R0-R8,PC}          @ Pop the registers off of the stack and return
+    BL      print_r0            @ 
+    ADD     R9,#32              @ Increment pointer
+    SUB     R10,#8              @ Decrement counter
+    CMP     R10,#0              @ Are we done?
+    BGT     pa_loop             @ If not, continue
+    POP     {R0-R10,PC}          @ Pop the registers off of the stack and return
 
 .data
 
@@ -116,4 +119,4 @@ sorted: .asciz "Sorted List:"
 bsort_title: .asciz "-=Bubble Sort=-"
 rsort_title: .asciz "-=Radix Sort=-"
 qsort_title: .asciz "-=Quick Sort=-"
-array: .space 16
+array: .space 256
