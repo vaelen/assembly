@@ -1,7 +1,6 @@
-@@@ Sorting Related Methods
-@@@ vim: set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab background=dark: 
-@@@ vim: ft=arm 
-
+@@@ Radix Most Significant Bit In-Place Sorting Algorithm
+@@@ Copyright 2017, Andrew Young <andrew@vaelen.org>
+    
 @@@ Exported Methods
     @@ Radix sort works properly
     .global rsort
@@ -77,7 +76,6 @@ rr_swap:
     BL      swap                @ Swap values
     POP     {PC}                @ Return
 rr_done:
-    //BL      rsort_debug
     POP     {R0-R8,PC}          @ Restore previous values   
 
 swap:

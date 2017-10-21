@@ -7,7 +7,7 @@ LD=arm-$(ARCH)-ld
 ASFLAGS=-g
 LDFLAGS=
 OBJECTS=syscalls.o numbers.o strings.o files.o errors.o count.o program.o
-TEST_SORT_OBJECTS=syscalls.o numbers.o strings.o sort.o test-sort.o
+TEST_SORT_OBJECTS=syscalls.o numbers.o strings.o sort.o rsort.o test-sort.o
 TEST_COUNT_OBJECTS=syscalls.o numbers.o strings.o files.o errors.o count.o test-count.o
 TEST_HEAP_OBJECTS=syscalls.o numbers.o strings.o heap.o heap-print.o test-heap.o 
 
