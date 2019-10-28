@@ -31,26 +31,26 @@
 .global _start
 
 _start:
-/*
+    /*
     MOV     R0,#128
     BL      test_binary
-*/  
+    */  
 
+    /*
     LDR     R0,=bsort           // Bubble Sort
     LDR     R1,=bsort_title     
     BL      test_sort           
-
-/*
+    */
+    
     LDR     R0,=qsort           // Quick Sort
     LDR     R1,=qsort_title     
     BL      test_sort           
-*/
 
-/*
+    /*
     LDR     R0,=rsort           // Radix Sort
     LDR     R1,=rsort_title     
-    BL      test_sort           
-*/
+    BL      test_sort
+    */
     
     MOV     R0,#0               // Normal return code
     B       exit                // exit
@@ -94,7 +94,7 @@ init_array:
     // Initialize the array
     PUSH    {R0-R2,LR}          // Push the existing registers on to the stack
     LDR     R0,=array           // Location of the array
-    MOV     R1,#256             // Number of random bytes to read
+    MOV     R1,#1               // Number of random bytes to read
     MOV     R2,#0               // Flags (default values)
     BL      getrandom
     POP     {R0-R2,PC}          // Pop the registers off of the stack and return
