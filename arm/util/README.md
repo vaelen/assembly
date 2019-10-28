@@ -2,8 +2,8 @@ ARM Assembly Utility Methods
 ================================
 
 This folder contains various utility methods written in ARM assembly language.
-It doesn't require linking against any other code to function properly.
-It does not use the standard C library.
+
+They don't need to be linked against any other code, including libstdc.
 
 Sorting Algorithms:
 - Radix Sort
