@@ -1,20 +1,19 @@
 #ARCH=none-eabi
-#ARCH=linux-gnueabi
-ARCH=linux-gnueabihf
+ARCH=linux-gnueabi
+#ARCH=linux-gnueabihf
 
 AS=arm-$(ARCH)-as
 LD=arm-$(ARCH)-ld
 ASFLAGS=-g
 LDFLAGS=
-OBJECTS=syscalls.o numbers.o strings.o files.o errors.o count.o program.o
+OBJECTS=syscalls.o numbers.o strings.o sort.o rsort.o heap.o
 TEST_SORT_OBJECTS=syscalls.o numbers.o strings.o sort.o rsort.o test-sort.o
 TEST_COUNT_OBJECTS=syscalls.o numbers.o strings.o files.o errors.o count.o test-count.o
 TEST_HEAP_OBJECTS=syscalls.o numbers.o strings.o heap.o heap-print.o test-heap.o 
 
-all: huffman tests
+all: objects tests
 
-huffman: $(OBJECTS)
-	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
+objects: $(OBJECTS)
 
 tests: test-count test-sort test-heap
 
@@ -28,11 +27,10 @@ test-heap: $(TEST_HEAP_OBJECTS)
 	$(LD) $(LDFLAGS) $(TEST_HEAP_OBJECTS) -o $@
 
 .o:
-	$(AS) $(ASFLAGS) $<.s -o $@
+	$(AS) $(ASFLAGS) $<.s -o $(OBJ_DIR)/$@
 
 clean:
 	rm -f *.o
-	rm -f huffman
 	rm -f test-sort
 	rm -f test-count
 	rm -f test-heap
