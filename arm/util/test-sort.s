@@ -45,11 +45,13 @@ _start:
     LDR     R1,=qsort_title     
     BL      test_sort           
 */
-    
+
+/*
     LDR     R0,=rsort           // Radix Sort
     LDR     R1,=rsort_title     
     BL      test_sort           
-
+*/
+    
     MOV     R0,#0               // Normal return code
     B       exit                // exit
 
@@ -74,7 +76,7 @@ test_sort:
     MOV     R2,R0               // R2 = Sort routine
     MOV     R0,R1               // Print title
     BL      puts
-    BL      init_array          // Initialize array
+    //BL      init_array          // Initialize array
     LDR     R0,=unsorted        // Print the unsorted header string
     BL      puts                // |
     BL      print_array         // Print array
@@ -134,4 +136,5 @@ sorted: .asciz "Sorted List:"
 bsort_title: .asciz "-=Bubble Sort=-"
 rsort_title: .asciz "-=Radix Sort=-"
 qsort_title: .asciz "-=Quick Sort=-"
-array: .space 256
+//array:  .space 32
+array:   .word 10, 2, 5, 3, 9, 12, 7, 4, 1, 8, 11, 6, 16, 14, 13, 15, 32, 20, 17, 25, 24, 26, 18, 31, 19, 28, 21, 27, 23, 22, 30, 29, 63, 59, 33, 60, 45, 52, 50, 40, 48, 34, 41, 35, 61, 55, 58, 62, 36, 37, 39, 38, 42, 51, 64, 54, 43, 56, 44, 46, 49, 47, 53, 57

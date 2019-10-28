@@ -7,7 +7,7 @@ They don't need to be linked against any other code, including libstdc.
 
 Sorting Algorithms:
 - Radix Sort
-- Bubble Sort (broken)
+- Bubble Sort
 - Quick Sort (broken)
 
 Data Structures:

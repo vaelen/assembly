@@ -75,7 +75,9 @@ print_r0:
     LDR     R1,=int_string      // | Write to the int_string memory location
     BL      itoa                // | Get string representation
     MOV     R0,R1               // Print the character string
-    BL      puts                // |
+    BL      fputs               // |
+	LDR     R0,=space_s         // Print a space
+	BL      fputs               // |
     POP     {R0,R1,PC}          // Return when loop completes, restore registers
 
 print_r0_binary:
@@ -142,4 +144,5 @@ strlen_loop:
 
 binary_string:   .asciz "00000000000000000000000000000000" // one word (4 bytes)
 int_string: .asciz "0000000000" // max 4294967296
-newline_s: .asciz "\n"
+newline_s:  .asciz "\n"
+space_s:    .asciz " "
