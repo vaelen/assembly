@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Sorting Related Methods
+// Quick Sort
 
 // Exteral Methods
     .global div
