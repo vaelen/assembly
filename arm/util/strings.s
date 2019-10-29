@@ -77,8 +77,8 @@ print_r0:
     BL      itoa                // | Get string representation
     MOV     R0,R1               // Print the character string
     BL      fputs               // |
-	LDR     R0,=space_s         // Print a space
-	BL      fputs               // |
+    LDR     R0,=space_s         // Print a space
+    BL      fputs               // |
     POP     {R0,R1,PC}          // Return when loop completes, restore registers
 
 print_r0_binary:
@@ -151,7 +151,7 @@ strcmp_loop:
     CMP     R2, #0              // If they are equal and both 0, return 0
     MOVEQ   R0, #0
     BEQ     strcmp_done
-    ADDS    R0,R0,#1	        // Check the next byte
+    ADDS    R0,R0,#1            // Check the next byte
     ADDS    R1,R1,#1
     B       strcmp_loop
 strcmp_lt:

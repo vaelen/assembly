@@ -42,7 +42,7 @@ _check_args:
     POP     {R3}                // R3 = next argument
     SUBS    R2,R2,#1
     
-	// Check for Help Flag
+    // Check for Help Flag
     MOV     R0,R3
     LDR     R1,=help_flag
     BL      strcmp
@@ -54,50 +54,50 @@ _check_args:
     BEQ     _done
     
     // Check for Quick Sort Flag
-	MOV     R0,R3
-	LDR     R1,=qsort_flag
-	BL      strcmp
-	MOV     R4,R0
-	CMP     R4,#0
+    MOV     R0,R3
+    LDR     R1,=qsort_flag
+    BL      strcmp
+    MOV     R4,R0
+    CMP     R4,#0
     LDREQ   R0,=qsort
-	LDREQ   R1,=qsort_title     
-	BLEQ    test_sort           
-	CMP     R4,#0
-	BEQ     _done
+    LDREQ   R1,=qsort_title     
+    BLEQ    test_sort           
+    CMP     R4,#0
+    BEQ     _done
 
     // Check for Bubble Sort Flag
-	MOV     R0,R3
-	LDR     R1,=bsort_flag
-	BL      strcmp
-	MOV     R4,R0
-	CMP     R4,#0
+    MOV     R0,R3
+    LDR     R1,=bsort_flag
+    BL      strcmp
+    MOV     R4,R0
+    CMP     R4,#0
     LDREQ   R0,=bsort
     LDREQ   R1,=bsort_title     
     BLEQ    test_sort           
-	CMP     R4,#0
-	BEQ     _done
+    CMP     R4,#0
+    BEQ     _done
 
     // Check for Radio Sort Flag
-	MOV     R0,R3
-	LDR     R1,=rsort_flag
-	BL      strcmp
-	MOV     R4,R0
-	CMP     R4,#0
+    MOV     R0,R3
+    LDR     R1,=rsort_flag
+    BL      strcmp
+    MOV     R4,R0
+    CMP     R4,#0
     LDREQ   R0,=rsort           
     LDREQ   R1,=rsort_title     
     BLEQ    test_sort
-	CMP     R4,#0
-	BEQ     _done
+    CMP     R4,#0
+    BEQ     _done
 
     // Check next argument
     B       _check_args
 
 _default:   
-	// Default to Quick Sort
+    // Default to Quick Sort
 
-	LDR     R0,=qsort           // Quick Sort
-	LDR     R1,=qsort_title     
-	BL      test_sort           
+    LDR     R0,=qsort           // Quick Sort
+    LDR     R1,=qsort_title     
+    BL      test_sort           
 
 _done:  
     MOV     R0,#0               // Normal return code

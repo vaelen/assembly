@@ -27,7 +27,7 @@
 qsort:
     // Quick sort an array of 32bit integers
     // Arguments: R0 = Array location, R1 = Array size
-	PUSH    {R0-R10,LR}         // Push the existing registers on to the stack
+    PUSH    {R0-R10,LR}         // Push the existing registers on to the stack
     MOV     R4,R0               // R4 = Array Location
     MOV     R5,R1               // R5 - Array Size
     CMP     R5,#1               // Check for an array of size <= 1
@@ -39,45 +39,45 @@ qsort_partition:
     MOV     R1,#2
     BL      div                 
     LDR     R6,[R4]             // R6 = Beginning of array value
-	LDR     R7,[R4,R2,LSL #2]   // R7 = Middle of array value
+    LDR     R7,[R4,R2,LSL #2]   // R7 = Middle of array value
     SUB     R8,R5,#1            // R8 = Upper array bound index (len -1 1)
-	LDR     R8,[R4,R8,LSL #2]   // R8 = End of the array value
+    LDR     R8,[R4,R8,LSL #2]   // R8 = End of the array value
     CMP     R6,R7               // Sort the values
     MOVGT   R9,R6
     MOVGT   R6,R7
     MOVGT   R7,R9
-	CMP     R7,R8
-	MOVGT   R9,R7
-	MOVGT   R7,R8
-	MOVGT   R8,R9
-	CMP     R6,R7
-	MOVGT   R9,R6
-	MOVGT   R6,R7
-	MOVGT   R7,R9
+    CMP     R7,R8
+    MOVGT   R9,R7
+    MOVGT   R7,R8
+    MOVGT   R8,R9
+    CMP     R6,R7
+    MOVGT   R9,R6
+    MOVGT   R6,R7
+    MOVGT   R7,R9
     MOV     R6,R7               // R6 = Pivot
     MOV     R7,#0               // R7 = Lower array bounds index
     SUB     R8,R5,#1            // R8 = Upper array bounds index (len - 1)
 qsort_loop:
     LDR     R0,[R4,R7,LSL #2]   // R0 = Lower value
     LDR     R1,[R4,R8,LSL #2]   // R1 = Upper value
-	CMP     R0,R6               // Compare lower value to pivot
+    CMP     R0,R6               // Compare lower value to pivot
     BEQ     qsort_loop_u        // If == pivot, do nothing
     ADDLT   R7,R7,#1            // If < pivot, increment lower index 
     STRGT   R0,[R4,R8,LSL #2]   // If > pivot, swap values
-	STRGT   R1,[R4,R7,LSL #2]
+    STRGT   R1,[R4,R7,LSL #2]
     SUBGT   R8,R8,#1            // if > pivot, decrement upper index
     CMP     R7,R8               // if indexes are the same, recurse
     BEQ     qsort_recurse
     LDR     R0,[R4,R7,LSL #2]   // R0 = Lower value
-	LDR     R1,[R4,R8,LSL #2]   // R1 = Upper value
+    LDR     R1,[R4,R8,LSL #2]   // R1 = Upper value
 qsort_loop_u:
-	CMP     R1,R6               // Compare upper value to pivot
+    CMP     R1,R6               // Compare upper value to pivot
     SUBGT   R8,R8,#1            // if > pivot, decrement upper index
-	STRLT   R0,[R4,R8,LSL #2]   // If < pivot, swap values
-	STRLT   R1,[R4,R7,LSL #2]
-	ADDLT   R7,R7,#1            // if < pivot, increment lower index
+    STRLT   R0,[R4,R8,LSL #2]   // If < pivot, swap values
+    STRLT   R1,[R4,R7,LSL #2]
+    ADDLT   R7,R7,#1            // if < pivot, increment lower index
     CMP     R7,R8               // if indexes are the same, recurse
-	BEQ     qsort_recurse
+    BEQ     qsort_recurse
     B       qsort_loop          // Continue loop
 qsort_recurse:
     MOV     R0,R4               // R0 = Location of the start of the array
