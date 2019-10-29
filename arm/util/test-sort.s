@@ -130,7 +130,7 @@ test_sort:
     BL      print_array         // Print array
     BL      newline             // Print newline
     LDR     R0,=array           // Set array location
-    MOV     R1,#64              // Set array size
+    MOV     R1,#16              // Set array size
     BLX     R2                  // Sort
     LDR     R0,=sorted          // Print the sorted header string
     BL      puts                // |
@@ -151,7 +151,7 @@ print_array:
     // Print the array
     PUSH    {R0-R10,LR}         // Push the existing registers on to the stack
     LDR     R9,=array           // Location of the array
-    MOV     R10,#64             // Array size
+    MOV     R10,#16             // Array size
 pa_loop:
     MOV     R0,R9               // Load the array data
     LDMIA   R0,{R1-R8}          // 

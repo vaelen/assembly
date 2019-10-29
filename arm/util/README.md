@@ -6,31 +6,31 @@ This folder contains various utility methods written in ARM assembly language.
 They don't need to be linked against any other code, including libstdc.
 
 Sorting Algorithms:
-- Radix Sort
-- Bubble Sort
-- Quick Sort
+- `rsort` - Radix MSB Sort
+- `bsort` - Bubble Sort
+- `qsort` - Quick Sort
 
 Data Structures:
 - Minimum Heap (Priority Queue)
 
 Number Handling:
-- itoa - integer to string
-- div - division with remainder
-- word_to_binary - word to binary string
+- `itoa` - integer to string
+- `div` - division with remainder
+- `word_to_binary` - word to binary string
 
 String Handling:
-- newline
-- strlen
-- strcmp
-- puts
-- fputs
+- `newline` - prints a new line character
+- `strlen`
+- `strcmp`
+- `puts`
+- `fputs`
 
 File Functions:
-- open_read - open a file for reading
-- open_write - open a file for writing
+- `open_read` - open a file for reading
+- `open_write` - open a file for writing
 
 Error Handling:
-- check_read_error - check error codes from a read operation
+- `check_read_error` - check error codes from a read operation
 
 Misc:
 - Methods for counting characters in a file
