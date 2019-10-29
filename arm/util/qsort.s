@@ -17,9 +17,6 @@
 
 // Quick Sort
 
-// Exteral Methods
-    .global div
-    
 // Exported Methods
     .global qsort
 
@@ -35,9 +32,8 @@ qsort:
     CMP     R5,#2               // Check for an array of size == 2
     BEQ     qsort_check         // If array size == 2, check values
 qsort_partition:
-    MOV     R0,R5               // Find the middle element
-    MOV     R1,#2
-    BL      div                 
+    MOV     R1,#2               // Find the middle element
+    SDIV    R2,R5,R1            // R2 = The middle element index
     LDR     R6,[R4]             // R6 = Beginning of array value
     LDR     R7,[R4,R2,LSL #2]   // R7 = Middle of array value
     SUB     R8,R5,#1            // R8 = Upper array bound index (len -1 1)
