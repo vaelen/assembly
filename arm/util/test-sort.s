@@ -28,30 +28,78 @@
     .global exit
 
 // Exported Methods
-.global _start
+    .global _start
+    .global print_array
 
 _start:
-    /*
-    MOV     R0,#128
-    BL      test_binary
-    */  
+    POP     {R2}                // R2 = argument count
 
-    /*
-    LDR     R0,=bsort           // Bubble Sort
-    LDR     R1,=bsort_title     
-    BL      test_sort           
-    */
-    
-    LDR     R0,=qsort           // Quick Sort
-    LDR     R1,=qsort_title     
-    BL      test_sort           
+_check_args:
+    // Check arguments
+    CMP     R2,#0
+    BEQ     _default            // Use default settings if we run out of arguments
 
-    /*
-    LDR     R0,=rsort           // Radix Sort
-    LDR     R1,=rsort_title     
-    BL      test_sort
-    */
+    POP     {R3}                // R3 = next argument
+    SUBS    R2,R2,#1
     
+	// Check for Help Flag
+    MOV     R0,R3
+    LDR     R1,=help_flag
+    BL      strcmp
+    MOV     R4,R0
+    CMP     R4,#0
+    LDREQ   R0,=help
+    BLEQ    puts
+    CMP     R4,#0
+    BEQ     _done
+    
+    // Check for Quick Sort Flag
+	MOV     R0,R3
+	LDR     R1,=qsort_flag
+	BL      strcmp
+	MOV     R4,R0
+	CMP     R4,#0
+    LDREQ   R0,=qsort
+	LDREQ   R1,=qsort_title     
+	BLEQ    test_sort           
+	CMP     R4,#0
+	BEQ     _done
+
+    // Check for Bubble Sort Flag
+	MOV     R0,R3
+	LDR     R1,=bsort_flag
+	BL      strcmp
+	MOV     R4,R0
+	CMP     R4,#0
+    LDREQ   R0,=bsort
+    LDREQ   R1,=bsort_title     
+    BLEQ    test_sort           
+	CMP     R4,#0
+	BEQ     _done
+
+    // Check for Radio Sort Flag
+	MOV     R0,R3
+	LDR     R1,=rsort_flag
+	BL      strcmp
+	MOV     R4,R0
+	CMP     R4,#0
+    LDREQ   R0,=rsort           
+    LDREQ   R1,=rsort_title     
+    BLEQ    test_sort
+	CMP     R4,#0
+	BEQ     _done
+
+    // Check next argument
+    B       _check_args
+
+_default:   
+	// Default to Quick Sort
+
+	LDR     R0,=qsort           // Quick Sort
+	LDR     R1,=qsort_title     
+	BL      test_sort           
+
+_done:  
     MOV     R0,#0               // Normal return code
     B       exit                // exit
 
@@ -136,5 +184,10 @@ sorted: .asciz "Sorted List:"
 bsort_title: .asciz "-=Bubble Sort=-"
 rsort_title: .asciz "-=Radix Sort=-"
 qsort_title: .asciz "-=Quick Sort=-"
+qsort_flag:  .asciz "-q"
+bsort_flag:  .asciz "-b"
+rsort_flag:  .asciz "-r"
+help_flag:   .asciz "-h"
+help:        .asciz "Usage: test-sort [-q|-b|-r]\n\nOptions:\n\t-q : quick sort\n\t-b : bubble sort\n\t-r : radix sort"
 //array:  .space 32
 array:   .word 10, 2, 5, 3, 9, 12, 7, 4, 1, 8, 11, 6, 16, 14, 13, 15, 32, 20, 17, 25, 24, 26, 18, 31, 19, 28, 21, 27, 23, 22, 30, 29, 63, 59, 33, 60, 45, 52, 50, 40, 48, 34, 41, 35, 61, 55, 58, 62, 36, 37, 39, 38, 42, 51, 64, 54, 43, 56, 44, 46, 49, 47, 53, 57

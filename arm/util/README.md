@@ -8,7 +8,7 @@ They don't need to be linked against any other code, including libstdc.
 Sorting Algorithms:
 - Radix Sort
 - Bubble Sort
-- Quick Sort (broken)
+- Quick Sort
 
 Data Structures:
 - Minimum Heap (Priority Queue)
@@ -21,6 +21,7 @@ Number Handling:
 String Handling:
 - newline
 - strlen
+- strcmp
 - puts
 - fputs
 

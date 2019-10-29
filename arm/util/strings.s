@@ -28,6 +28,7 @@
     .global print_r0_binary
     .global print_memory_binary
     .global strlen
+    .global strcmp
     .global fputs
     .global puts
     .global int_string
@@ -127,7 +128,7 @@ fputs:
     
 strlen:
     // Finds the length of the string at address R0
-    // Returns the length in R1
+    // Returns the length in R1 (TODO: This should be R0)
     PUSH    {R2,LR}             // Push the existing registers on to the stack
     SUBS    R1,R0,#1            // R1 = One byte before the first memory location
 strlen_loop:
@@ -138,6 +139,29 @@ strlen_loop:
     SUBS    R1,R1,R0            // R1 = Length of string
     POP     {R2,PC}             // Pop the registers off of the stack and return
 
+strcmp:
+    // Compares two strings
+    PUSH    {R2-R3,LR}
+strcmp_loop:
+    LDRB    R2,[R0]             // Load next byte of string at R0
+    LDRB    R3,[R1]             // Load next byte of string at R1
+    CMP     R2,R3               // Compare bytes
+    BLT     strcmp_lt
+    BGT     strcmp_gt
+    CMP     R2, #0              // If they are equal and both 0, return 0
+    MOVEQ   R0, #0
+    BEQ     strcmp_done
+    ADDS    R0,R0,#1	        // Check the next byte
+    ADDS    R1,R1,#1
+    B       strcmp_loop
+strcmp_lt:
+    MOV     R0, #-1             // If the first string is less, return -1
+    B       strcmp_done
+strcmp_gt:
+    MOV     R0, #1              // If the first string is more, return 1
+strcmp_done:
+    POP     {R2-R3,PC}
+    
 // Data Section
     
     .data
