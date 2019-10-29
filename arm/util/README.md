@@ -37,11 +37,11 @@ Misc:
 - Methods for printing various debugging information
 
 Linux System Calls:
-- exit
-- fork
-- read
-- write
-- open
-- close
-- getpid
-- getrandom
+- `exit`
+- `fork`
+- `read`
+- `write`
+- `open`
+- `close`
+- `getpid`
+- `getrandom`
