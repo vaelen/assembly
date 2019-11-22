@@ -9,6 +9,7 @@ Sorting Algorithms:
 - `rsort` - Radix MSB Sort
 - `bsort` - Bubble Sort
 - `qsort` - Quick Sort
+- `hsort` - Heap Sort
 
 Data Structures:
 - Minimum Heap (Priority Queue)
