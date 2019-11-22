@@ -129,26 +129,34 @@ tb_loop:
     B       tb_loop             // Loop
 tb_done:    
     POP     {R0-R1,PC}          // Return
+
+clear_registers:
+    LDR     R0,=clear_reg_a
+    LDM     R0, {R0-R12}
+    MOV PC, LR
     
 test_sort:
     // R0 = Address of the sort routine, R1 = Address of title
-    PUSH    {R0-R2,LR}          // Push the existing registers on to the stack
+    PUSH    {R0-R12,LR}         // Push the existing registers on to the stack
+    PUSH    {R0,R1}                // Clear existing register contents, but save R0
+    BL      clear_registers
+    POP     {R0,R1}
     MOV     R2,R0               // R2 = Sort routine
     MOV     R0,R1               // Print title
     BL      puts
     //BL      init_array          // Initialize array
     LDR     R0,=unsorted        // Print the unsorted header string
-    BL      puts                // |
+    BL      puts
     BL      print_array         // Print array
     BL      newline             // Print newline
     LDR     R0,=array           // Set array location
     MOV     R1,#64              // Set array size
     BLX     R2                  // Sort
     LDR     R0,=sorted          // Print the sorted header string
-    BL      puts                // |
+    BL      puts
     BL      print_array         // Print array
     BL      newline             // Print newline
-    POP     {R0-R2,PC}          // Pop the registers off of the stack and return
+    POP     {R0-R12,PC}         // Pop the registers off of the stack and return
     
 init_array:
     // Initialize the array
@@ -191,17 +199,19 @@ pa_loop:
 
 .data
 
-unsorted: .asciz "Unsorted List:"
-sorted: .asciz "Sorted List:"
-bsort_title: .asciz "-=Bubble Sort=-"
-rsort_title: .asciz "-=Radix Sort=-"
-qsort_title: .asciz "-=Quick Sort=-"
-hsort_title: .asciz "-=Heap Sort=-"
-qsort_flag:  .asciz "-q"
-bsort_flag:  .asciz "-b"
-rsort_flag:  .asciz "-r"
-hsort_flag:  .asciz "-H"
-help_flag:   .asciz "-h"
-help:        .asciz "Usage: test-sort [-q|-b|-r|-H]\n\nOptions:\n\t-q : quick sort\n\t-b : bubble sort\n\t-r : radix sort\n\t-H : heap sort"
-//array:  .space 32
-array:   .word 10, 2, 5, 3, 9, 12, 7, 4, 1, 8, 11, 6, 16, 14, 13, 15, 32, 20, 17, 25, 24, 26, 18, 31, 19, 28, 21, 27, 23, 22, 30, 29, 63, 59, 33, 60, 45, 52, 50, 40, 48, 34, 41, 35, 61, 55, 58, 62, 36, 37, 39, 38, 42, 51, 64, 54, 43, 56, 44, 46, 49, 47, 53, 57
+unsorted:       .asciz "Unsorted List:"
+sorted:         .asciz "Sorted List:"
+bsort_title:    .asciz "-=Bubble Sort=-"
+rsort_title:    .asciz "-=Radix Sort=-"
+qsort_title:    .asciz "-=Quick Sort=-"
+hsort_title:    .asciz "-=Heap Sort=-"
+qsort_flag:     .asciz "-q"
+bsort_flag:     .asciz "-b"
+rsort_flag:     .asciz "-r"
+hsort_flag:     .asciz "-H"
+help_flag:      .asciz "-h"
+help:           .asciz "Usage: test-sort [-q|-b|-r|-H]\n\nOptions:\n\t-q : quick sort\n\t-b : bubble sort\n\t-r : radix sort\n\t-H : heap sort"
+//array:        .space 32
+array:          .word 10, 2, 5, 3, 9, 12, 7, 4, 1, 8, 11, 6, 16, 14, 13, 15, 32, 20, 17, 25, 24, 26, 18, 31, 19, 28, 21, 27, 23, 22, 30, 29, 63, 59, 33, 60, 45, 52, 50, 40, 48, 34, 41, 35, 61, 55, 58, 62, 36, 37, 39, 38, 42, 51, 64, 54, 43, 56, 44, 46, 49, 47, 53, 57
+array_size:     .word 64
+clear_reg_a:    .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

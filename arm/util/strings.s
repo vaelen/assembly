@@ -25,6 +25,7 @@
     .global newline
     .global print_registers
     .global print_r0
+    .global print_r0_verbose
     .global print_r0_binary
     .global print_memory_binary
     .global strlen
@@ -44,33 +45,70 @@ newline:
 
 print_registers:
     PUSH    {R0-R12,LR}         // Push the existing registers on to the stack
-    BL      print_r0
-    MOV     R0,R1
-    BL      print_r0
+    PUSH    {R1}
+    MOV     R1,#0
+    BL      print_r0_verbose
+    POP     {R0}
+    MOV     R1,#1
+    BL      print_r0_verbose
     MOV     R0,R2
-    BL      print_r0
+       MOV     R1,#2
+    BL      print_r0_verbose
     MOV     R0,R3
-    BL      print_r0
+    MOV     R1,#3    
+    BL      print_r0_verbose
     MOV     R0,R4
-    BL      print_r0
+       MOV     R1,#4
+    BL      print_r0_verbose
     MOV     R0,R5
-    BL      print_r0
+    MOV     R1,#5
+    BL      print_r0_verbose
     MOV     R0,R6
-    BL      print_r0
+       MOV     R1,#6
+    BL      print_r0_verbose
     MOV     R0,R7
-    BL      print_r0
+       MOV     R1,#7
+    BL      print_r0_verbose
     MOV     R0,R8
-    BL      print_r0
+       MOV     R1,#8
+    BL      print_r0_verbose
     MOV     R0,R9
-    BL      print_r0
+       MOV     R1,#9
+    BL      print_r0_verbose
     MOV     R0,R10
-    BL      print_r0
+    MOV     R1,#10
+    BL      print_r0_verbose
     MOV     R0,R11
-    BL      print_r0
+    MOV     R1,#11
+    BL      print_r0_verbose
     MOV     R0,R12
-    BL      print_r0
+    MOV     R1,#12
+    BL      print_r0_verbose
     POP     {R0-R12,PC}         // Return when loop completes, restore registers
 
+print_r0_verbose:
+    // R0 = value
+    // R1 = register number
+    PUSH    {R0,R1,R2,LR}       // Push the existing registers on to the stack
+    PUSH    {R0}
+    LDR     R0,=R_s             // Print R
+    BL      fputs
+    MOV     R0,R1
+    LDR     R1,=int_string      // Print register number
+    BL      itoa
+    MOV     R0,R1
+    BL      fputs
+    LDR     R0,=colon_s         // Print separator
+    BL      fputs
+    POP     {R0}                // Print register value
+    LDR     R1,=int_string      // | Write to the int_string memory location
+    BL      itoa                // | Get string representation
+    MOV     R0,R1               // Print the character string
+    BL      fputs               // |
+    LDR     R0,=space_s         // Print a space
+    BL      fputs               // |
+    POP     {R0,R1,R2,PC}          // Return when loop completes, restore registers
+    
 print_r0:
     PUSH    {R0,R1,LR}          // Push the existing registers on to the stack
     LDR     R1,=int_string      // | Write to the int_string memory location
@@ -164,9 +202,11 @@ strcmp_done:
     
 // Data Section
     
-    .data
+.data
 
-binary_string:   .asciz "00000000000000000000000000000000" // one word (4 bytes)
-int_string: .asciz "0000000000" // max 4294967296
-newline_s:  .asciz "\n"
-space_s:    .asciz " "
+binary_string:  .asciz "00000000000000000000000000000000" // one word (4 bytes)
+int_string:     .asciz "0000000000" // max 4294967296
+newline_s:      .asciz "\n"
+space_s:        .asciz " "
+R_s:            .asciz "R"
+colon_s:        .asciz ": "
